@@ -1,0 +1,176 @@
+###########################################################################
+## Zero-Inflated Model (ZINB), only one omega for all observations (optim)
+###########################################################################
+
+# +-x +-x +-x +-x +-x +-x +-x +-x 
+#  assuming independence
+# +-x +-x +-x +-x +-x +-x +-x +-x 
+
+LSE_R <- function(vec){ 
+  n.vec <- length(vec)
+  vec <- sort(vec, decreasing = TRUE)
+  Lk <- vec[1]
+  for (k in 1:(n.vec-1)) {
+    Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk))) 
+  }
+  return(Lk)
+}
+
+HZINB_one_gamma_assuming_independence = function(K, L, H, grid, init_pi_k, init_pi_l, init_pi_h, N_ij, E_ij, iteration, Loglik){
+  ## EM algorithm
+  
+  #install.packages("countreg", repos="http://R-Forge.R-project.org")
+  if (!require('countreg')) install.packages('countreg'); library('countreg')
+  
+  all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
+  colnames(all_combinations) = c("a_j", "b_j", "omega_j")
+  all_combinations$a_j = rep(grid$a_j, 100)
+  
+  for (i in c(1:L)){
+    all_combinations$b_j[((i - 1)*100 + 1):(i*100)] = rep(grid$b_j[i], 100)
+  }
+  
+  for (i in c(1:H)){
+    row_num = c(((i - 1)*10 + 1):(i*10))
+    all_combinations$omega_j[row_num] = rep(grid$omega_j[i], 10)
+  }
+  
+  all_combinations$omega_j = rep(all_combinations$omega_j[1:100], 10)
+  
+  # initialization
+  N.EM <- iteration  # number of E-M iterations
+  
+  pi_klh_K = matrix(NA, N.EM + 2, K)
+  pi_klh_L = matrix(NA, N.EM + 2, L)
+  pi_klh_H = matrix(NA, N.EM + 2, H)
+  
+  pi_klh_K[1,] = init_pi_k
+  pi_klh_L[1,] = init_pi_l
+  pi_klh_H[1,] = init_pi_h
+  
+  
+  pi_klh_all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
+  colnames(pi_klh_all_combinations) = c("K", "L", "H")
+  
+  denominator = rep(NA, ncol(N_ij))
+  numerator = rep(NA, ncol(N_ij))
+  ratio = as.data.frame(matrix(NA, K*H*L, ncol(N_ij)))
+  #llh_col = rep(NA, ncol(N_ij))
+  #RATIO = list()
+  
+  joint_probs = as.data.frame(matrix(NA, nrow(all_combinations), ncol(N_ij)))
+  
+  for (j in 1:ncol(N_ij)){
+    for (m in 1:nrow(all_combinations)){
+      joint_probs[m,j] = sum(dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
+    }
+  }
+  
+  llh_j = rep(NA, ncol(N_ij))
+  llh = rep(NA, N.EM + 1)
+  
+  for (i in 1:(N.EM + 1)) {
+    
+    pi_klh_all_combinations$K = rep(pi_klh_K[i,], 100)
+    
+    for (ii in c(1:L)){
+      pi_klh_all_combinations$L[((ii - 1)*100 + 1):(ii*100)] = rep(pi_klh_L[i,][ii], 100)
+    }
+    
+    for (iii in c(1:H)){
+      row_num = c(((iii - 1)*10 + 1):(iii*10))
+      pi_klh_all_combinations$H[row_num] = rep(pi_klh_H[i,][iii], 10)
+    }
+    
+    pi_klh_all_combinations$H = rep(pi_klh_all_combinations$H[1:100], 10)
+    pi_klh_all_combinations$prod = pi_klh_all_combinations$K * pi_klh_all_combinations$L * pi_klh_all_combinations$H
+    
+    for (m in 1:nrow(all_combinations)){
+      for (j in 1:ncol(N_ij)){
+        denominator[j] = LSE_R(log(pi_klh_all_combinations$prod) + joint_probs[,j])
+        numerator[j] = log(pi_klh_K[i, which(grid$a_j == all_combinations$a_j[m])]*pi_klh_L[i, which(grid$b_j == all_combinations$b_j[m])]*pi_klh_H[i, which(grid$omega_j == all_combinations$omega_j[m])]) + joint_probs[m, j]
+        ratio[m,j] = numerator[j] - denominator[j]
+      }
+    }
+    
+   # if (Loglik == TRUE){
+  #    RATIO[[i]] = ratio
+  #  } else {
+  #    RATIO = NULL
+  #  }
+    
+    all = cbind(all_combinations, ratio)
+    
+    for (iv in 1:nrow(ratio)){
+      all$Sum[iv] = LSE_R(ratio[iv,])
+    }
+    
+    all$Sum = unlist(all$Sum)
+    temp = subset(all, !is.na(Sum))
+    overallSum = LSE_R(temp$Sum)
+    sum_a_j = aggregate(temp$Sum, by = list(Category = temp$a_j), FUN=LSE_R)
+    sum_b_j = aggregate(temp$Sum, by = list(Category = temp$b_j), FUN=LSE_R)
+    sum_omega_j = aggregate(temp$Sum, by = list(Category = temp$omega_j), FUN=LSE_R)
+    
+    a_id = NULL
+    b_id = NULL
+    omega_id = NULL
+    
+    for (kk in 1:nrow(grid)){
+      a_id = append(a_id, ifelse(sum(grid$a_j[kk] == sum_a_j$Category) == 0, kk, next))
+    }
+    
+    for (kk in 1:nrow(grid)){
+      b_id = append(b_id, ifelse(sum(grid$b_j[kk] == sum_b_j$Category) == 0, kk, next))
+    }
+    
+    for (kk in 1:nrow(grid)){
+      omega_id = append(omega_id, ifelse(sum(grid$omega_j[kk] == sum_omega_j$Category) == 0, kk, next))
+    }
+    
+    if (length(a_id) == 0){
+      pi_klh_K[i + 1, ] = exp(sum_a_j$x - overallSum)
+    } else {
+      pi_klh_K[i + 1, ][-a_id] = exp(sum_a_j$x - overallSum)
+      pi_klh_K[i + 1, ][a_id] = 0
+    }
+    
+    if (length(b_id) == 0){
+      pi_klh_L[i + 1, ] = exp(sum_b_j$x - overallSum)
+    } else {
+      pi_klh_L[i + 1, ][-b_id] = exp(sum_b_j$x - overallSum)
+      pi_klh_L[i + 1, ][b_id] = 0
+    }
+    
+    if (length(omega_id) == 0){
+      pi_klh_H[i + 1, ] = exp(sum_omega_j$x - overallSum)
+    } else {
+      pi_klh_H[i + 1, ][-omega_id] = exp(sum_omega_j$x - overallSum)
+      pi_klh_H[i + 1, ][omega_id] = 0
+    }
+    
+    
+    
+    if (Loglik == TRUE){
+      
+      for (j in 1:ncol(N_ij)){
+        
+        pi_klh_all_combinations$logSum = log(pi_klh_all_combinations$K) + log(unlist(pi_klh_all_combinations$L)) + log(unlist(pi_klh_all_combinations$H)) + joint_probs[,j]
+        llh_j[j] = LSE_R(pi_klh_all_combinations$logSum)
+        
+      }
+      
+      llh[i] = sum(llh_j)
+      print(i)
+      
+      } else {
+      llh = NULL
+      }
+  }
+  
+  result = list("pi_K" = pi_klh_K[-(N.EM + 2), ], "pi_L" = pi_klh_L[-(N.EM + 2), ], "pi_H" = pi_klh_H[-(N.EM + 2), ], "Loglik" = llh)
+  return(result)
+  
+}
+
+
