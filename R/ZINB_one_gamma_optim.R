@@ -1,3 +1,15 @@
+#' Create a complete ggplot appropriate to a particular data type
+#'
+#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
+#' This defines the S3 generic that other classes and packages can extend.
+#'
+#' @param object an object, whose class will determin the behaviour of autoplot
+#' @param  ...other auguments passed to specific methods
+#' @return a ggplot object
+#' @export
+#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+
+
 ###########################################################################
 ## Zero-Inflated Model (ZINB), only one omega for all observations (optim)
 ###########################################################################
@@ -6,77 +18,77 @@
 
 # N = Nij$frequency, E = Eij$baseline
 
-LSE_R <- function(vec){ 
+LSE_R <- function(vec){
   n.vec <- length(vec)
   vec <- sort(vec, decreasing = TRUE)
   Lk <- vec[1]
   for (k in 1:(n.vec-1)) {
-    Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk))) 
+    Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
   }
   return(Lk)
 }
 
 
 ZINB_one_gamma_optim = function(alpha, beta, omega, N, E, iteration, Loglik){
-  
+
   logisticY = rep(NA, length(N))
   # estimate omega_ij (logistic regression)
   logisticY = ifelse(N == 0, 0, 1)
-  
+
   # initialization
   N.EM <- iteration  # number of E-M iterations
   theta_EM = matrix(rep(0, 3 * (N.EM + 1)), nrow = N.EM + 1, ncol = 3)  # matrix for holding theta in the E-M iterations
   theta_EM = as.data.frame(theta_EM)
-  theta_EM[1, ] <- c(alpha, beta, omega)  # initial value for parameters 
+  theta_EM[1, ] <- c(alpha, beta, omega)  # initial value for parameters
   colnames(theta_EM) = c("alpha", "beta", "omega")
-  
+
   T_ij = rep(NA, nrow(Nij))
-  
+
   zero = which(Nij$frequency == 0)
-  
+
   # the E-M iterations
   for (i in c(1:N.EM)) {
-    
-    # Expectation step: 
-    T_ij_zero_1 = log(theta_EM$omega[i]) 
-    T_ij_zero_2 = log(theta_EM$omega[i] + (1 - theta_EM$omega[i])*(((theta_EM$beta[i])/(theta_EM$beta[i] + E[zero]))^(theta_EM$alpha[i]))) 
+
+    # Expectation step:
+    T_ij_zero_1 = log(theta_EM$omega[i])
+    T_ij_zero_2 = log(theta_EM$omega[i] + (1 - theta_EM$omega[i])*(((theta_EM$beta[i])/(theta_EM$beta[i] + E[zero]))^(theta_EM$alpha[i])))
     T_ij[zero] = exp(T_ij_zero_1 - T_ij_zero_2)
     T_ij[-zero] = 0
-    
-    # Maximization step: 
+
+    # Maximization step:
     theta_EM$omega[i + 1] = sum(T_ij)/(sum(T_ij) + sum(1 - T_ij))
-    
+
     ZNegBin = function(parameter, N, E, Ts){
       alpha = parameter[1]
       beta = parameter[2]
-      
+
       max = sum((1 - Ts)*dnbinom(N, size = alpha, prob = beta/(E + beta), log = TRUE))
-      
+
       return(-max)
     }
-    
+
     theta_EM[i + 1, 1:2] = optim(c(theta_EM$alpha[i], theta_EM$beta[i]), ZNegBin, method = "BFGS", N = N, E = E, Ts = T_ij)$par
   }
-  
+
   if (Loglik == TRUE){
-      
+
       llh1 = rep(NA, nrow(theta_EM))
       log.dens = rep(0, length(N))
-      
+
       for (i in c(1: nrow(theta_EM))){
-        
+
         log.dens = ifelse(N == 0, log(theta_EM$omega[i] + exp(log(1 - theta_EM$omega[i]) + dnbinom(0, size = theta_EM$alpha[i], prob = theta_EM$beta[i]/(E + theta_EM$beta[i]), log = TRUE))), log(1 - theta_EM$omega[i]) + dnbinom(N, size = theta_EM$alpha[i], prob = theta_EM$beta[i]/(E + theta_EM$beta[i]), log = TRUE))
 
         llh1[i] = sum(log.dens)
-        
+
         }
       } else {
         llh1 = NA
         }
-  
+
   result = list("theta_EM" = theta_EM, "Loglik" = llh1)
   return(result)
-  
+
 }
 
 

@@ -1,23 +1,14 @@
-################################################
-##  data squashing EM
-################################################
-
-if (!require('openEBGM')) install.packages('openEBGM'); library('openEBGM')
-
-AE20Q1small_rename = AE20Q1small_tidy[, c("primaryid", "PT", "prod_ai")]
-colnames(AE20Q1small_rename) = c("id", "var1", "var2")
-
-AE20Q1small_rename = subset(AE20Q1small_rename, var1 %in% AE_keep & var2 %in% drug_keep)
-AE20Q1small_rename = na.omit(AE20Q1small_rename)
-AE20Q1small_rename = droplevels(AE20Q1small_rename)
-
-Eij_prime = Eij[order(Eij$PT),]
-
-AE20Q1small_E_RR_PRR = processRaw(AE20Q1small_rename, zeroes = TRUE)
-AE20Q1small_E_RR_PRR$E = Eij_prime$baseline
-squashed = autoSquash(AE20Q1small_E_RR_PRR, keep_pts = 190000)
-
-
+#' Create a complete ggplot appropriate to a particular data type
+#'
+#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
+#' This defines the S3 generic that other classes and packages can extend.
+#'
+#' @param object an object, whose class will determin the behaviour of autoplot
+#' @param  ...other auguments passed to specific methods
+#' @return a ggplot object
+#' @export
+#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#'
 ###########################################################
 ## MGPS, Expectation Maximization (optimization, uniroot)
 ###########################################################
