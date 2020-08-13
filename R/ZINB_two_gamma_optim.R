@@ -16,20 +16,6 @@
 
 # input N = Nij$frequency, E = Eij$baseline
 
-LSE_R <- function(vec){
-  n.vec <- length(vec)
-  vec <- sort(vec, decreasing = TRUE)
-  Lk <- vec[1]
-  for (k in 1:(n.vec-1)) {
-    Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
-  }
-  return(Lk)
-}
-
-log_sum_exp = function(u, v) {
-  sum =  max(u, v) + log(exp(u - max(u, v)) + exp(v - max(u, v)))
-  return(sum)
-}
 
 ZINB_two_gamma_optim = function(alpha1, beta1, alpha2, beta2, pi, omega, N, E, iteration, Loglik){
 

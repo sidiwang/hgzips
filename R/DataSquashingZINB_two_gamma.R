@@ -10,14 +10,17 @@
 #' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
 #'
 
-log_sum_exp = function(u, v) {
-  sum =  max(u, v) + log(exp(u - max(u, v)) + exp(v - max(u, v)))
-  return(sum)
-}
+
 
 # input N = Nij$frequency, E = Eij$baseline
 
+
 DataSquashingZINB_two_gamma = function(alpha1, beta1, alpha2, beta2, pi, omega, N, E, weight, iteration, Loglik){
+
+  log_sum_exp = function(u, v) {
+    sum =  max(u, v) + log(exp(u - max(u, v)) + exp(v - max(u, v)))
+    return(sum)
+  }
 
   logisticY = rep(NA, length(N))
   # estimate omega_ij (logistic regression)

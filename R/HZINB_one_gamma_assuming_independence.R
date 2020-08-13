@@ -18,16 +18,6 @@
 #  assuming independence
 # +-x +-x +-x +-x +-x +-x +-x +-x
 
-LSE_R <- function(vec){
-  n.vec <- length(vec)
-  vec <- sort(vec, decreasing = TRUE)
-  Lk <- vec[1]
-  for (k in 1:(n.vec-1)) {
-    Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
-  }
-  return(Lk)
-}
-
 HZINB_one_gamma_assuming_independence = function(K, L, H, grid, init_pi_k, init_pi_l, init_pi_h, N_ij, E_ij, iteration, Loglik){
   ## EM algorithm
 
