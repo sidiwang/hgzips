@@ -2,22 +2,27 @@
 % Please edit documentation in R/Posterior_HZINB.R
 \name{posteriorHZINB}
 \alias{posteriorHZINB}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{HGZIPS - HZINB posterior lambda}
 \usage{
 posteriorHZINB(posterior_a_j, posterior_b_j, posterior_omega_j, N_ij, E_ij)
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{posterior_a_j}{the posterior average of HZINB a_j, can be produced by the posterior_abomega_HZINB function in the package}
 
-\item{...other}{auguments passed to specific methods}
+\item{posterior_b_j}{the posterior average of HZINB b_j, can be produced by the posterior_abomega_HZINB function in the package}
+
+\item{posterior_omega_j}{the posterior average of HZINB b_j, can be produced by the posterior_abomega_HZINB function in the package}
+
+\item{N_ij}{matrix of N_ij, i = AE, j = drugs}
+
+\item{E_ij}{matrix of E_ij, i = AE, j = drugs}
 }
 \value{
-a ggplot object
+the posterior mean of the lambda in HZINB
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+This HZINB function.........
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }

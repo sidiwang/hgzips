@@ -81,15 +81,15 @@ rawProcessing = function(rawdata, frequency_threshold, data.squashing = FALSE){
 
     Eij_prime = Eij[order(Eij$PT),]
 
-    small_E_RR_PRR = processRaw(small_rename, zeroes = TRUE)
+    small_E_RR_PRR = openEBGM::processRaw(small_rename, zeroes = TRUE)
     small_E_RR_PRR$E = Eij_prime$baseline
-    squashed = autoSquash(small_E_RR_PRR, keep_pts = 190000)
+    squashed = openEBGM::autoSquash(small_E_RR_PRR, keep_pts = 190000)
 
     drug_subsets <- split(small_E_RR_PRR, small_E_RR_PRR$var2)
     N_ij_squashed = list()
 
     for (i in names(drug_subsets)){
-      N_ij_squashed[[i]] = autoSquash(drug_subsets[[i]], keep_pts = 30)
+      N_ij_squashed[[i]] = openEBGM::autoSquash(drug_subsets[[i]], keep_pts = 30)
     }
 
     NnE <- list("N_ij" = N_ij, "Nij" = Nij, "E_ij" = E_ij, "Eij" = Eij, "processedData" = small_tidy, "drugList" = drug_keep, "AEList" = AE_keep, "N_ij_squashed" = N_ij_squashed, "squashed" = squashed)

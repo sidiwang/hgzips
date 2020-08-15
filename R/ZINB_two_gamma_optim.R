@@ -39,9 +39,9 @@ ZINB_two_gamma_optim = function(alpha1, beta1, alpha2, beta2, pi, omega, N, E, i
   theta_EM[1, ] <- c(alpha1, beta1, alpha2, beta2, pi, omega)  # initial value for parameters
   colnames(theta_EM) = c("alpha1", "beta1", "alpha2", "beta2", "pi", "omega")
 
-  T_ij = rep(NA, nrow(Nij))
-  cluster = rep(NA, nrow(Nij))
-  u_ij = rep(NA, nrow(Nij))
+  T_ij = rep(NA, length(N))
+  cluster = rep(NA, length(N))
+  u_ij = rep(NA, length(N))
 
 
   # count = 0

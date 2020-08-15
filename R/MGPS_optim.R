@@ -26,8 +26,8 @@ MGPS_optim = function(alpha1, beta1, alpha2, beta2, pi, N, E, iteration, Loglik)
   theta_EM[1, ] <- c(alpha1, beta1, alpha2, beta2, pi)  # initial value for parameters
   colnames(theta_EM) = c("alpha1", "beta1", "alpha2", "beta2", "pi")
 
-  T_ij = rep(NA, nrow(Nij))
-  cluster = rep(NA, nrow(Nij))
+  T_ij = rep(NA, length(N))
+  cluster = rep(NA, length(N))
 
   # the E-M iterations
   for (i in c(1:N.EM)) {
@@ -66,12 +66,12 @@ MGPS_optim = function(alpha1, beta1, alpha2, beta2, pi, N, E, iteration, Loglik)
 
     for (i in c(1 : nrow(theta_EM))){
 
-      probs1 <- theta_EM$beta1[i]/(Eij$baseline + theta_EM$beta1[i])
-      probs2 <- theta_EM$beta2[i]/(Eij$baseline + theta_EM$beta2[i])
+      probs1 <- theta_EM$beta1[i]/(E + theta_EM$beta1[i])
+      probs2 <- theta_EM$beta2[i]/(E + theta_EM$beta2[i])
 
       ## Use LogSumExp trick
-      D1.vec <- log(theta_EM$pi[i]) + dnbinom(Nij$frequency, size = theta_EM$alpha1[i], prob = probs1, log = TRUE)
-      D2.vec <- log(1 - theta_EM$pi[i]) + dnbinom(Nij$frequency, size = theta_EM$alpha2[i], prob = probs2, log = TRUE)
+      D1.vec <- log(theta_EM$pi[i]) + dnbinom(N, size = theta_EM$alpha1[i], prob = probs1, log = TRUE)
+      D2.vec <- log(1 - theta_EM$pi[i]) + dnbinom(N, size = theta_EM$alpha2[i], prob = probs2, log = TRUE)
 
       log.dens <- rep(0, length(D1.vec))
       log.dens[D1.vec < D2.vec] <- D2.vec[D1.vec < D2.vec] + log(1 + exp(D1.vec[D1.vec < D2.vec] - D2.vec[D1.vec < D2.vec]))

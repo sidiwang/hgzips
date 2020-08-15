@@ -34,7 +34,7 @@ parRangeCheck = function(N_ij, E_ij){
     data = as.data.frame(cbind(N_ij[,j], rep(1, nrow(N_ij))))
     colnames(data) = c("N_ij", "X")
     tryCatch({
-      model = zeroinfl(N_ij ~ 1, data = data, dist = "negbin", offset = log(E_ij[,j]))
+      model = pscl::zeroinfl(N_ij ~ 1, data = data, dist = "negbin", offset = log(E_ij[,j]))
       a_j[j] = model$theta
       omega_j[j] = exp(coef(model)[2])/(1 + exp(coef(model)[2]))
       b_j[j] = a_j[j]/exp(model$coefficients[1]$count)
@@ -122,7 +122,7 @@ HZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, N_ij, E_ij, 
 
   for (j in 1:ncol(N_ij)){
     for (m in 1:nrow(all_combinations)){
-      joint_probs[m,j] = sum(dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
+      joint_probs[m,j] = sum(countreg::dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
     }
   }
 

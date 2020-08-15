@@ -43,9 +43,9 @@ DataSquashingZINB_two_gamma = function(alpha1, beta1, alpha2, beta2, pi, omega, 
   theta_EM[1, ] <- c(alpha1, beta1, alpha2, beta2, pi, omega)  # initial value for parameters
   colnames(theta_EM) = c("alpha1", "beta1", "alpha2", "beta2", "pi", "omega")
 
-  T_ij = rep(NA, nrow(Nij))
-  cluster = rep(NA, nrow(Nij))
-  u_ij = rep(NA, nrow(Nij))
+  T_ij = rep(NA, nrow(squashedData))
+  cluster = rep(NA, nrow(squashedData))
+  u_ij = rep(NA, nrow(squashedData))
 
 
   # count = 0

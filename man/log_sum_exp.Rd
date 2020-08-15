@@ -2,22 +2,21 @@
 % Please edit documentation in R/log_sum_exp.R
 \name{log_sum_exp}
 \alias{log_sum_exp}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{log Sum Exp}
 \usage{
 log_sum_exp(u, v)
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{u}{first number}
 
-\item{...other}{auguments passed to specific methods}
+\item{v}{second number}
 }
 \value{
-a ggplot object
+logged sum of exponential of u and v
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+log Sum Exp
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }

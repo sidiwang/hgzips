@@ -46,7 +46,7 @@ posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_kl
 
   for (j in 1:ncol(N_ij)){
     for (m in 1:nrow(all_combinations)){
-      joint_probs[m,j] = sum(dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
+      joint_probs[m,j] = sum(countreg::dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
     }
   }
 

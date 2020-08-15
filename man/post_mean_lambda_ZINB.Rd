@@ -2,22 +2,25 @@
 % Please edit documentation in R/Posterior_ZINB.R
 \name{post_mean_lambda_ZINB}
 \alias{post_mean_lambda_ZINB}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{HGZIPS - ZINB posterior lambda}
 \usage{
 post_mean_lambda_ZINB(alpha, beta, N, E)
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{alpha}{the final estimation of alpha in ZINB}
 
-\item{...other}{auguments passed to specific methods}
+\item{beta}{the final estimation of beta in ZINB}
+
+\item{N}{vector of Nij values}
+
+\item{E}{vector of Eij values}
 }
 \value{
-a ggplot object
+the posterior mean of the lambda in ZINB
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+This HZINB function.........
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }

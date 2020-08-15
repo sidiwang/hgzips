@@ -2,10 +2,12 @@
 % Please edit documentation in R/posterior_abomega_HZINB.R
 \name{posterior_abomega}
 \alias{posterior_abomega}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{HGZIPS - calculating the posterior value of HZINB a_j, b_j and omega_j}
 \usage{
 posterior_abomega(
-  grid,
+  grid_a,
+  grid_b,
+  grid_omega,
   pi_klh_final_a_j,
   pi_klh_final_b_j,
   pi_klh_final_omega_j,
@@ -14,17 +16,28 @@ posterior_abomega(
 )
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{grid_a}{alpha value grid}
 
-\item{...other}{auguments passed to specific methods}
+\item{grid_b}{beta value grid}
+
+\item{grid_omega}{omega value grid}
+
+\item{pi_klh_final_a_j}{final estimation of the probability of each alpha value, produced by the EM algorithm}
+
+\item{pi_klh_final_b_j}{final estimation of the probability of each beta value, produced by the EM algorithm}
+
+\item{pi_klh_final_omega_j}{final estimation of the probability of each omega value, produced by the EM algorithm}
+
+\item{N_ij}{matrix of N_ij, i = AE, j = drugs}
+
+\item{E_ij}{matrix of E_ij, i = AE, j = drugs}
 }
 \value{
-a ggplot object
+a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+HGZIPS - calculating the posterior value of HZINB a_j, b_j and omega_j
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }

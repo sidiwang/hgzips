@@ -1,7 +1,10 @@
 #' HGZIPS - MGPS (uniroot-optimization)
 #'
 #' This MGPS function.........
+#' @name MGPS(uni-opt)
+#' @aliases MGPS_uniroot_optimization
 #'
+#' @title  MGPS function
 #' @import stats
 #'
 #' @param alpha.par initial shape parameter vector of the two gamma distributions for implementing the EM algprithm
@@ -11,8 +14,6 @@
 #' @param E vector of E_ij
 #' @param iteration number of EM algorithm iterations to run
 #' @param Loglik whether to return the loglikelihood of each iteration or not (TRUE or FALSE)
-#' @return a list of estimated parameters and their corresponding loglikelihood
-#' @export
 #' @seealso
 #'
 ProfileLogLik <- function(alpha, Tij, N, E) {
@@ -100,7 +101,10 @@ LogLikMGPS <- function(theta, N, E) {
 
 # input: initial alpha, beta, pi,  N = Nij$frequency, E = Eij$baseline, iterations
 # output: estimated parameters of each iteration, and loglikelihood of each iteration
-
+#' @rdname MGPS(uni-opt)
+#' @return estimated parameters and loglikelihood
+#' MGPS_uniroot_optimization
+#' @export
 MGPS_uniroot_optimization = function(alpha.par, beta.par, pi.par, N, E, iterations, Loglik){
 
   niter <- iterations

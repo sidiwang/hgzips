@@ -48,9 +48,9 @@ ZINB_one_gamma_optim = function(alpha, beta, omega, N, E, iteration, Loglik){
   theta_EM[1, ] <- c(alpha, beta, omega)  # initial value for parameters
   colnames(theta_EM) = c("alpha", "beta", "omega")
 
-  T_ij = rep(NA, nrow(Nij))
+  T_ij = rep(NA, length(N))
 
-  zero = which(Nij$frequency == 0)
+  zero = which(N == 0)
 
   # the E-M iterations
   for (i in c(1:N.EM)) {

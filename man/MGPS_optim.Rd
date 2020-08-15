@@ -2,22 +2,35 @@
 % Please edit documentation in R/MGPS_optim.R
 \name{MGPS_optim}
 \alias{MGPS_optim}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{HGZIPS - MGPS (optim)}
 \usage{
 MGPS_optim(alpha1, beta1, alpha2, beta2, pi, N, E, iteration, Loglik)
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{alpha1}{initial shape parameter value of the first gamma distribution for implementing the EM algprithm}
 
-\item{...other}{auguments passed to specific methods}
+\item{beta1}{initial rate parameter value of the first gamma distribution for implementing the EM algprithm}
+
+\item{alpha2}{initial shape parameter value of the second gamma distribution for implementing the EM algprithm}
+
+\item{beta2}{initial rate parameter value of the second gamma distribution for implementing the EM algprithm}
+
+\item{pi}{initial xxxxxxx?}
+
+\item{N}{vector of N_ij values}
+
+\item{E}{vector of E_ij values}
+
+\item{iteration}{number of EM algorithm iterations to run}
+
+\item{Loglik}{whether to return the loglikelihood of each iteration or not (TRUE or FALSE)}
 }
 \value{
-a ggplot object
+a list of estimated parameters and their corresponding loglikelihood
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+This MGPS function.........
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }

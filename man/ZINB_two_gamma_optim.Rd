@@ -2,7 +2,7 @@
 % Please edit documentation in R/ZINB_two_gamma_optim.R
 \name{ZINB_two_gamma_optim}
 \alias{ZINB_two_gamma_optim}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{HGZIPS - ZINB (mixture of two gamma)}
 \usage{
 ZINB_two_gamma_optim(
   alpha1,
@@ -18,17 +18,32 @@ ZINB_two_gamma_optim(
 )
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{alpha1}{initial shape parameter value of the first gamma distribution for implementing the EM algprithm}
 
-\item{...other}{auguments passed to specific methods}
+\item{beta1}{initial rate parameter value of the first gamma distribution for implementing the EM algprithm}
+
+\item{alpha2}{initial shape parameter value of the second gamma distribution for implementing the EM algprithm}
+
+\item{beta2}{initial rate parameter value of the second gamma distribution for implementing the EM algprithm}
+
+\item{pi}{initial xxxxxxx?}
+
+\item{omega}{initial xxxxxxx?}
+
+\item{N}{vector of Nij values}
+
+\item{E}{vector of Eij values}
+
+\item{iteration}{number of EM algorithm iterations to run}
+
+\item{Loglik}{whether to return the loglikelihood of each iteration or not (TRUE or FALSE)}
 }
 \value{
-a ggplot object
+a list of estimated parameters and their corresponding loglikelihood
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+This ZINB function.........
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }

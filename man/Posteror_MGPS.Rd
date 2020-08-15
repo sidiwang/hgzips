@@ -2,22 +2,31 @@
 % Please edit documentation in R/Posteror_MGPS.R
 \name{Posteror_MGPS}
 \alias{Posteror_MGPS}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{HGZIPS - MGPS posterior lambda}
 \usage{
 Posteror_MGPS(alpha1, beta1, alpha2, beta2, pi, N, E)
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{alpha1}{the final estimation of alpha1 in ZINB}
 
-\item{...other}{auguments passed to specific methods}
+\item{beta1}{the final estimation of beta1 in ZINB}
+
+\item{alpha2}{the final estimation of alpha2 in ZINB}
+
+\item{beta2}{the final estimation of beta2 in ZINB}
+
+\item{pi}{the final estimation of pi in ZINB}
+
+\item{N}{vector of Nij values}
+
+\item{E}{vector of Eij values}
 }
 \value{
-a ggplot object
+the posterior mean of the lambda in HZINB
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+This HZINB function.........
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }

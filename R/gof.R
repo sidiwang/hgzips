@@ -1,28 +1,28 @@
 #' HGZIPS - Data Squashing HZINB (not assuming independence)
 #'
 #' This Data Squashing HZINB function.........
-#'
+#' @name gof
 #' @import stats
 #'
-#' @param N
-#' @param E
-#' @param N_ij
-#' @param E_ij
-#' @param alpha1
-#' @param alpha2
-#' @param beta1
-#' @param beta2
-#' @param pi
-#' @param omega
-#' @param alpha
-#' @param beta
-#' @param posterior_a_j
-#' @param posterior_b_j
-#' @param posterior_omega_j
-#' @param fitted_prob
-#' @param observed_freq
+#' @param N 1
+#' @param E 2
+#' @param N_ij 3
+#' @param E_ij 4
+#' @param alpha1 5
+#' @param alpha2 6
+#' @param beta1 1
+#' @param beta2 2
+#' @param pi 3
+#' @param omega 2
+#' @param alpha 3
+#' @param beta 4
+#' @param posterior_a_j 2
+#' @param posterior_b_j 2
+#' @param posterior_omega_j 23
+#' @param fitted_prob 3
+#' @param observed_freq 4
 #' @return observed frequencies, estimated frequencies and goodness of fit
-#' @export
+
 #' @seealso
 #'
 ##############
@@ -32,7 +32,10 @@
 
 # input N_ij format
 # output observed frequencies
-
+#' @rdname gof
+#' @return observed frequencies
+#' observed_frequencies
+#' @export
 observed_freqencies = function(N){
 
   N = as.matrix(N)
@@ -50,7 +53,10 @@ observed_freqencies = function(N){
 
 }
 
-
+#' @rdname gof
+#' @return ZINB fitted values
+#' fitted_ZINB
+#' @export
 # input N = N_ij, E = E_ij
 fitted_ZINB = function(alpha, beta, omega, N, E){
 
@@ -62,7 +68,10 @@ fitted_ZINB = function(alpha, beta, omega, N, E){
 
 }
 
-
+#' @rdname gof
+#' @return fitted MGPS
+#' fitted MGPS
+#' @export
 # input N = N_ij, E = E_ij
 fitted_MGPS = function(alpha1, alpha2, beta1, beta2, pi, N, E){
 
@@ -74,6 +83,11 @@ fitted_MGPS = function(alpha1, alpha2, beta1, beta2, pi, N, E){
 
 }
 
+
+#' @rdname gof
+#' @return fitted ZINB two gamma
+#' fitted ZINB two gamma
+#' @export
 # input N = N_ij, E = E_ij
 fitted_ZINB_two_gamma = function(alpha1, alpha2, beta1, beta2, pi, omega, N, E){
 
@@ -86,6 +100,10 @@ fitted_ZINB_two_gamma = function(alpha1, alpha2, beta1, beta2, pi, omega, N, E){
 }
 
 
+#' @rdname gof
+#' @return observed_freq_HZINB
+#' observed_freq_HZINB
+#' @export
 observed_freq_HZINB = function(N_ij){
 
   observed_freq = as.data.frame(matrix(NA, nrow(N_ij), ncol(N_ij)))
@@ -105,7 +123,10 @@ observed_freq_HZINB = function(N_ij){
 
 
 
-
+#' @rdname gof
+#' @return fitted_HZINB_one_gamma_independence
+#' fitted_HZINB_one_gamma_independence
+#' @export
 fitted_HZINB_one_gamma_independence = function(posterior_a_j, posterior_b_j, posterior_omega_j, N_ij, E_ij){
 
   N_ij = as.matrix(N_ij)
@@ -122,6 +143,10 @@ fitted_HZINB_one_gamma_independence = function(posterior_a_j, posterior_b_j, pos
 
 }
 
+#' @rdname gof
+#' @return gof
+#' gof
+#' @export
 gof = function(fitted_prob, observed_freq){
 
   gof = sum((fitted_prob - observed_freq)^2)

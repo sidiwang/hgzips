@@ -2,22 +2,23 @@
 % Please edit documentation in R/rawProcessing.R
 \name{rawProcessing}
 \alias{rawProcessing}
-\title{Create a complete ggplot appropriate to a particular data type}
+\title{HGZIPS - rawProcessing}
 \usage{
 rawProcessing(rawdata, frequency_threshold, data.squashing = FALSE)
 }
 \arguments{
-\item{object}{an object, whose class will determin the behaviour of autoplot}
+\item{rawdata}{rawdata input}
 
-\item{...other}{auguments passed to specific methods}
+\item{frequency_threshold}{minimum......}
+
+\item{data.squashing}{whether to conduct data squashing or not (TRUE or FALSE)}
 }
 \value{
-a ggplot object
+a list of objects after raw data processing
 }
 \description{
-\code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-This defines the S3 generic that other classes and packages can extend.
+This function.........
 }
 \seealso{
-\code{\link{ggplot}} and \code{\link{fortify}}
+
 }
