@@ -3,6 +3,7 @@
 #' This function.........
 #'
 #' @import stats
+#' @import openEBGM
 #'
 #' @param rawdata rawdata input
 #' @param frequency_threshold minimum......
@@ -92,7 +93,14 @@ rawProcessing = function(rawdata, frequency_threshold, data.squashing = FALSE){
       N_ij_squashed[[i]] = openEBGM::autoSquash(drug_subsets[[i]], keep_pts = 30)
     }
 
-    NnE <- list("N_ij" = N_ij, "Nij" = Nij, "E_ij" = E_ij, "Eij" = Eij, "processedData" = small_tidy, "drugList" = drug_keep, "AEList" = AE_keep, "N_ij_squashed" = N_ij_squashed, "squashed" = squashed)
+    N_E_list = list()
+    for (j in (1:ncol(N_ij))){
+      jj = as.data.frame(cbind(N_ij[, j], E_ij[, j], rep(1, nrow(N_ij))))
+      colnames(jj) = c("N", "E", "weight")
+      N_E_list[[j]] = jj
+    }
+
+    NnE <- list("N_ij" = N_ij, "Nij" = Nij, "E_ij" = E_ij, "Eij" = Eij, "processedData" = small_tidy, "drugList" = drug_keep, "AEList" = AE_keep, "N_ij_squashed" = N_ij_squashed, "N_E_list" = N_E_list, "squashed" = squashed)
 
 
   }

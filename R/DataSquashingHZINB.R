@@ -1,9 +1,14 @@
-#' HGZIPS - Data Squashing HZINB (not assuming independence)
+#' HGZIPS - HZINB (not assuming independence)
 #'
-#' This Data Squashing HZINB function.........
-#' @name DataSquashingHZINB
-#' @aliases DataSquashingHZINB
+#' This HZINB function.........
+#' @name DHZINB
+#' @aliases HZINB
+#' @aliases parRangeCheck
+#' @aliases grid_HZINB
+#'
+#' @import emdbook
 #' @import stats
+#' @import pscl
 #' @title Data Squashing HZINB function
 #' @param grid_a alpha value grid
 #' @param grid_b beta value grid
@@ -20,9 +25,15 @@
 
 # input N = N_ij, E = E_ij
 
+#' @rdname DataSquashingHZINB
+#' parRangeCheck
+#'
+#' @return check the range of a_j, b_j, and omega_j for the dataset
+#' @export
+#'
 parRangeCheck = function(N_ij, E_ij){
 
-  if (!require('countreg')) install.packages('countreg'); library('countreg')
+#  if (!require('countreg')) install.packages('countreg'); library('countreg')
 
   a_j = rep(NA, ncol(N_ij))
   b_j = rep(NA, ncol(N_ij))
@@ -32,7 +43,7 @@ parRangeCheck = function(N_ij, E_ij){
     data = as.data.frame(cbind(N_ij[,j], rep(1, nrow(N_ij))))
     colnames(data) = c("N_ij", "X")
     tryCatch({
-      model = zeroinfl(N_ij ~ 1, data = data, dist = "negbin", offset = log(E_ij[,j]))
+      model = pscl::zeroinfl(N_ij ~ 1, data = data, dist = "negbin", offset = log(E_ij[,j]))
       a_j[j] = model$theta
       omega_j[j] = exp(coef(model)[2])/(1 + exp(coef(model)[2]))
       b_j[j] = a_j[j]/exp(model$coefficients[1]$count)
@@ -51,6 +62,13 @@ parRangeCheck = function(N_ij, E_ij){
 ## HZINB: build a parameter grid
 ##########################################################
 
+
+#' @rdname DataSquashingHZINB
+#' grid_HZINB
+#'
+#' @return a suitable grid of a_j, b_j, and omega_j for implementing HZINB
+#' @export
+#'
 grid_HZINB = function(a_j, b_j, omega_j, K, L, H){
 
   grid = as.data.frame(matrix(NA, max(c(K, L, H)), 3))
@@ -80,18 +98,18 @@ grid_HZINB = function(a_j, b_j, omega_j, K, L, H){
 #  Not assuming independence
 # +-x +-x +-x +-x +-x +-x +-x +-x
 
-#' @rdname DataSquashingHZINB
-#' DataSquashingHZINB_one_gamma
+#' @rdname HZINB
+#' HZINB_one_gamma
 #'
 #' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
 #' @export
-DataSquashingHZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, N_ij_squashed, iteration, Loglik){
+HZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, N_ij_squashed, iteration, Loglik){
 
   K = length(grid_a)
   L = length(grid_b)
   H = length(grid_omega)
 
-  if (!require('countreg')) install.packages('countreg'); library('countreg')
+#  if (!require('countreg')) install.packages('countreg'); library('countreg')
 
   all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
   colnames(all_combinations) = c("a_j", "b_j", "omega_j")
@@ -124,7 +142,7 @@ DataSquashingHZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh,
 
   for (j in 1:length(N_ij_squashed)){
     for (m in 1:nrow(all_combinations)){
-      joint_probs[m,j] = sum(N_ij_squashed[[j]]$weight * dzinbinom(N_ij_squashed[[j]]$N, mu = (N_ij_squashed[[j]]$E/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
+      joint_probs[m,j] = sum(N_ij_squashed[[j]]$weight * emdbook::dzinbinom(N_ij_squashed[[j]]$N, mu = (N_ij_squashed[[j]]$E/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
     }
   }
 

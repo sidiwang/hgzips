@@ -1,8 +1,9 @@
 #' HGZIPS - HZINB (not assuming independence)
 #'
 #' This HZINB function.........
-#'
+#' @name HZINB
 #' @import stats
+#' @import emdbook
 #'
 #' @param grid_a alpha value grid
 #' @param grid_b beta value grid
@@ -12,8 +13,7 @@
 #' @param E_ij matrix of E_ij, i = AE, j = drugs
 #' @param iteration number of EM algorithm iterations to run
 #' @param Loglik whether to return the loglikelihood of each iteration or not (TRUE or FALSE)
-#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
-#' @export
+
 #' @seealso
 #'
 ##########################################################
@@ -24,7 +24,7 @@
 
 parRangeCheck = function(N_ij, E_ij){
 
-  if (!require('countreg')) install.packages('countreg'); library('countreg')
+#  if (!require('countreg')) install.packages('countreg'); library('countreg')
 
   a_j = rep(NA, ncol(N_ij))
   b_j = rep(NA, ncol(N_ij))
@@ -81,8 +81,9 @@ grid_HZINB = function(a_j, b_j, omega_j, K, L, H){
 # +-x +-x +-x +-x +-x +-x +-x +-x
 #  Not assuming independence
 # +-x +-x +-x +-x +-x +-x +-x +-x
-
-
+#' @rdname HZINB
+#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+#' @export
 HZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, N_ij, E_ij, iteration, Loglik){
 
   K = length(grid_a)
@@ -122,7 +123,7 @@ HZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, N_ij, E_ij, 
 
   for (j in 1:ncol(N_ij)){
     for (m in 1:nrow(all_combinations)){
-      joint_probs[m,j] = sum(countreg::dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
+      joint_probs[m,j] = sum(emdbook::dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], zprob = all_combinations$omega_j[m], log = TRUE))
     }
   }
 

@@ -2,6 +2,7 @@
 #'
 #' This Data Squashing HZINB function.........
 #' @name DataSquashingHZINB_assuming_independence
+#' @aliases DataSquashingHZINB_assuming_independence
 #' @import stats
 #'
 #' @param grid_a alpha value grid

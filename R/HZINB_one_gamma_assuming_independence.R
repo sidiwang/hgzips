@@ -1,7 +1,7 @@
 #' HGZIPS - HZINB ( assuming independence)
 #'
 #' This HZINB function.........
-#'
+#' @name HZINB_independence
 #' @import stats
 #'
 #' @param grid_a alpha value grid
@@ -25,7 +25,7 @@
 #  assuming independence
 # +-x +-x +-x +-x +-x +-x +-x +-x
 
-HZINB_one_gamma_assuming_independence = function(grid_a, grid_b, grid_omega, init_pi_k, init_pi_l, init_pi_h, N_ij, E_ij, iteration, Loglik){
+HZINB_independence = function(grid_a, grid_b, grid_omega, init_pi_k, init_pi_l, init_pi_h, N_ij, E_ij, iteration, Loglik){
   ## EM algorithm
 
   K = length(grid_a)

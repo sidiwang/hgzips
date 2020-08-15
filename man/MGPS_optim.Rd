@@ -4,7 +4,7 @@
 \alias{MGPS_optim}
 \title{HGZIPS - MGPS (optim)}
 \usage{
-MGPS_optim(alpha1, beta1, alpha2, beta2, pi, N, E, iteration, Loglik)
+MGPS_optim(alpha1, beta1, alpha2, beta2, pi, N, E, weight, iteration, Loglik)
 }
 \arguments{
 \item{alpha1}{initial shape parameter value of the first gamma distribution for implementing the EM algprithm}
@@ -17,9 +17,11 @@ MGPS_optim(alpha1, beta1, alpha2, beta2, pi, N, E, iteration, Loglik)
 
 \item{pi}{initial xxxxxxx?}
 
-\item{N}{vector of N_ij values}
+\item{N}{vector of Nij values}
 
-\item{E}{vector of E_ij values}
+\item{E}{vector of Eij values}
+
+\item{weight}{set weight = rep(1, length(N)) if N and E are not squashed data, or input the weight vector corresponding to the squashed Nij vector.}
 
 \item{iteration}{number of EM algorithm iterations to run}
 
