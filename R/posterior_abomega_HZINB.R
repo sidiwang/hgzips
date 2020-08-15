@@ -1,40 +1,43 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - calculating the posterior value of HZINB a_j, b_j and omega_j
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#'
+#' @import stats
+#'
+#' @param grid_a alpha value grid
+#' @param grid_b beta value grid
+#' @param grid_omega omega value grid
+#' @param pi_klh_final_a_j final estimation of the probability of each alpha value, produced by the EM algorithm
+#' @param pi_klh_final_b_j final estimation of the probability of each beta value, produced by the EM algorithm
+#' @param pi_klh_final_omega_j final estimation of the probability of each omega value, produced by the EM algorithm
+#' @param N_ij matrix of N_ij, i = AE, j = drugs
+#' @param E_ij matrix of E_ij, i = AE, j = drugs
+#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#' @seealso
 #'
 #'
-##########################################################
-## HZINB: check the range of parameters
-##########################################################
+posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_klh_final_b_j, pi_klh_final_omega_j, N_ij, E_ij){
 
-posterior_abomega = function(grid, pi_klh_final_a_j, pi_klh_final_b_j, pi_klh_final_omega_j, N_ij, E_ij){
+  a_j = grid_a
+  b_j = grid_b
+  omega_j = grid_omega
 
-  a_j = grid$a_j
-  b_j = grid$b_j
-  omega_j = grid$omega_j
-
-  K = length(grid$a_j)
-  L = length(grid$b_j)
-  H = length(grid$omega_j)
+  K = length(grid_a)
+  L = length(grid_b)
+  H = length(grid_omega)
 
   all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
   colnames(all_combinations) = c("a_j", "b_j", "omega_j")
-  all_combinations$a_j = rep(grid$a_j, 100)
+  all_combinations$a_j = rep(grid_a, 100)
 
   for (i in c(1:L)){
-    all_combinations$b_j[((i - 1)*100 + 1):(i*100)] = rep(grid$b_j[i], 100)
+    all_combinations$b_j[((i - 1)*100 + 1):(i*100)] = rep(grid_b[i], 100)
   }
 
   for (i in c(1:H)){
     row_num = c(((i - 1)*10 + 1):(i*10))
-    all_combinations$omega_j[row_num] = rep(grid$omega_j[i], 10)
+    all_combinations$omega_j[row_num] = rep(grid_omega[i], 10)
   }
 
   all_combinations$omega_j = rep(all_combinations$omega_j[1:100], 10)

@@ -1,16 +1,20 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - MGPS (uniroot-optimization)
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' This MGPS function.........
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @import stats
+#'
+#' @param alpha.par initial shape parameter vector of the two gamma distributions for implementing the EM algprithm
+#' @param beta.par initial rate parameter vector of the two gamma distributions for implementing the EM algprithm
+#' @param pi.par initial xxxxxxx?
+#' @param N vector of N_ij
+#' @param E vector of E_ij
+#' @param iteration number of EM algorithm iterations to run
+#' @param Loglik whether to return the loglikelihood of each iteration or not (TRUE or FALSE)
+#' @return a list of estimated parameters and their corresponding loglikelihood
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#' @seealso
 #'
-# input N = Nij$frequency, E = Eij$baseline
-
 ProfileLogLik <- function(alpha, Tij, N, E) {
 
   N = as.matrix(N)

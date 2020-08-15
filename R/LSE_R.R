@@ -1,13 +1,10 @@
-#' Create a complete ggplot appropriate to a particular data type
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' log Sum Exp of vector
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @param vec vector to be summed
+#' @return the logged sum of the exponentials of all values in vector
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#' @seealso
 #'
 #'
 

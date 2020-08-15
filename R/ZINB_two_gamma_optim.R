@@ -1,15 +1,24 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - ZINB (mixture of two gamma)
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' This ZINB function.........
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @import stats
+#'
+#' @param alpha1 initial shape parameter value of the first gamma distribution for implementing the EM algprithm
+#' @param beta1 initial rate parameter value of the first gamma distribution for implementing the EM algprithm
+#' @param alpha2 initial shape parameter value of the second gamma distribution for implementing the EM algprithm
+#' @param beta2 initial rate parameter value of the second gamma distribution for implementing the EM algprithm
+#' @param pi initial xxxxxxx?
+#' @param omega initial xxxxxxx?
+#' @param N vector of Nij values
+#' @param E vector of Eij values
+#' @param iteration number of EM algorithm iterations to run
+#' @param Loglik whether to return the loglikelihood of each iteration or not (TRUE or FALSE)
+#' @return a list of estimated parameters and their corresponding loglikelihood
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#' @seealso
 #'
-#'
+
 ##########################################################
 ## Zero-Inflated Model (ZINB) mix of two gamma (optim)
 ##########################################################

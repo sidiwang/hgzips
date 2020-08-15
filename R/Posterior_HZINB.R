@@ -1,14 +1,18 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - HZINB posterior lambda
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' This HZINB function.........
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @import stats
+#'
+#' @param posterior_a_j the posterior average of HZINB a_j, can be produced by the posterior_abomega_HZINB function in the package
+#' @param posterior_b_j the posterior average of HZINB b_j, can be produced by the posterior_abomega_HZINB function in the package
+#' @param posterior_omega_j the posterior average of HZINB b_j, can be produced by the posterior_abomega_HZINB function in the package
+#' @param N_ij matrix of N_ij, i = AE, j = drugs
+#' @param E_ij matrix of E_ij, i = AE, j = drugs
+
+#' @return the posterior mean of the lambda in HZINB
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
-#'
+#' @seealso
 #'
 ##########################################################
 ## Posterior HZINB One Gamma

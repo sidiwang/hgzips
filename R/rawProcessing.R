@@ -1,15 +1,16 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - rawProcessing
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' This function.........
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @import stats
+#'
+#' @param rawdata rawdata input
+#' @param frequency_threshold minimum......
+#' @param data.squashing whether to conduct data squashing or not (TRUE or FALSE)
+
+#' @return a list of objects after raw data processing
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
-#'
-#'
+#' @seealso
 
 ############################################################
 ## raw data processing, generating N_ij, E_ij, Nij, Eij

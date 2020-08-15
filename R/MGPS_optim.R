@@ -1,15 +1,22 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - MGPS (optim)
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' This MGPS function.........
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @import stats
+#'
+#' @param alpha1 initial shape parameter value of the first gamma distribution for implementing the EM algprithm
+#' @param beta1 initial rate parameter value of the first gamma distribution for implementing the EM algprithm
+#' @param alpha2 initial shape parameter value of the second gamma distribution for implementing the EM algprithm
+#' @param beta2 initial rate parameter value of the second gamma distribution for implementing the EM algprithm
+#' @param pi initial xxxxxxx?
+#' @param N vector of N_ij values
+#' @param E vector of E_ij values
+#' @param iteration number of EM algorithm iterations to run
+#' @param Loglik whether to return the loglikelihood of each iteration or not (TRUE or FALSE)
+#' @return a list of estimated parameters and their corresponding loglikelihood
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#' @seealso
 #'
-
 MGPS_optim = function(alpha1, beta1, alpha2, beta2, pi, N, E, iteration, Loglik){
 
   # initialization

@@ -1,13 +1,19 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - MGPS posterior lambda
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' This HZINB function.........
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @import stats
+#' @param alpha1 the final estimation of alpha1 in ZINB
+#' @param beta1 the final estimation of beta1 in ZINB
+#' @param alpha2 the final estimation of alpha2 in ZINB
+#' @param beta2 the final estimation of beta2 in ZINB
+#' @param pi the final estimation of pi in ZINB
+#' @param N vector of Nij values
+#' @param E vector of Eij values
+#'
+#' @return the posterior mean of the lambda in HZINB
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#' @seealso
 #'
 #'
 ###########################################################

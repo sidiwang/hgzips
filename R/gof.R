@@ -1,16 +1,31 @@
-#' Create a complete ggplot appropriate to a particular data type
+#' HGZIPS - Data Squashing HZINB (not assuming independence)
 #'
-#' \code{autoplot} uses ggplot2 to draw a particular plot for an object of a particular class in a single command.
-#' This defines the S3 generic that other classes and packages can extend.
+#' This Data Squashing HZINB function.........
 #'
-#' @param object an object, whose class will determin the behaviour of autoplot
-#' @param  ...other auguments passed to specific methods
-#' @return a ggplot object
+#' @import stats
+#'
+#' @param N
+#' @param E
+#' @param N_ij
+#' @param E_ij
+#' @param alpha1
+#' @param alpha2
+#' @param beta1
+#' @param beta2
+#' @param pi
+#' @param omega
+#' @param alpha
+#' @param beta
+#' @param posterior_a_j
+#' @param posterior_b_j
+#' @param posterior_omega_j
+#' @param fitted_prob
+#' @param observed_freq
+#' @return observed frequencies, estimated frequencies and goodness of fit
 #' @export
-#' @seealso  \code{\link{ggplot}} and \code{\link{fortify}}
+#' @seealso
 #'
-#'
-#'
+##############
 ##########################################################
 ## goodness of fit
 ##########################################################
