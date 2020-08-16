@@ -1,6 +1,6 @@
 #' HGZIPS - calculating the posterior value of HZINB a_j, b_j and omega_j
 #'
-#'
+#' @name posterior
 #'
 #' @import stats
 #' @import emdbook
@@ -13,11 +13,20 @@
 #' @param pi_klh_final_omega_j final estimation of the probability of each omega value, produced by the EM algorithm
 #' @param N_ij matrix of N_ij, i = AE, j = drugs
 #' @param E_ij matrix of E_ij, i = AE, j = drugs
-#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
-#' @export
+
 #' @seealso
 #'
 #'
+#'
+#'
+#'
+
+
+
+#' @rdname posterior
+#' @aliases posterior_abomega
+#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+#' @export
 posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_klh_final_b_j, pi_klh_final_omega_j, N_ij, E_ij){
 
   a_j = grid_a
@@ -102,5 +111,89 @@ posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_kl
 
   result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j)
   return(result)
+
+}
+
+
+
+
+
+#' @rdname posterior
+#' @aliases posterior_HZINB
+#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+#' @export
+# N = N_ij, E = E_ij
+
+posterior_HZINB = function(posterior_a_j, posterior_b_j, posterior_omega_j, N_ij, E_ij){
+
+  post_HZINB = matrix(NA, nrow(N_ij), ncol(N_ij))
+
+  for (j in 1 : ncol(N_ij)){
+    post_HZINB[, j] =  (posterior_a_j[j] + N_ij[, j])/(posterior_b_j[j] + E_ij[, j])
+    Qx = posterior_omega_j[j]/(posterior_omega_j[j] + (1 - posterior_omega_j[j])*dnbinom(0, size = posterior_a_j[j], prob = posterior_b_j[j]/E_ij[, j] + posterior_b_j[j]))
+    post_HZINB[which(N_ij[, j] == 0, arr.ind = TRUE)] = (Qx*posterior_a_j[j]/posterior_b_j[j] + (1 - Qx)*posterior_a_j[j]/(posterior_b_j[j] + E_ij[, j]))[which(N_ij[, j] == 0, arr.ind = TRUE)]
+
+  }
+
+  return(post_HZINB)
+}
+
+
+
+
+# input, N = Nij$frequency, E = Eij$baseline
+#' @rdname posterior
+#' @aliases post_mean_lambda_ZINB
+#' post_mean_lambda_ZINB
+#' @export
+post_mean_lambda_ZINB = function(alpha, beta, N, E){
+  post_mean_lambda = (alpha + N)/(beta + E)
+  return(post_mean_lambda)
+}
+
+#' @rdname posterior
+#' @aliases post_mean_loglambda_ZINB
+#' post_mean_loglambda_ZINB
+#' @return posterior mean of logged lambda
+#' @export
+post_mean_loglambda_ZINB = function(alpha, beta, N, E){
+  post_mean_loglambda = digamma(alpha + N) - log(beta + E)
+  return(post_mean_loglambda)
+}
+
+
+
+#' @rdname posterior
+#' @aliases Posteror_MGPS
+#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+#' @export
+Posteror_MGPS = function(alpha1, beta1, alpha2, beta2, pi, N, E){
+  # calculate Qx: the posterior probability that lambda came fromt he first component of the mixtrue, given N = x.
+  Qx_1 = pi*dnbinom(N, size = alpha1, prob = beta1/(E + beta1))
+  Qx_2 = (1 - pi)*dnbinom(N, size = alpha2, prob = beta2/(E + beta2))
+  Qx = Qx_1/(Qx_1 + Qx_2)
+
+  # calculate posterior expectation of lambda|N:
+  post_mean_lambda = Qx*(alpha1 + N)/(beta1 + E) + (1 - Qx)*(alpha2 + N)/(beta2 + E)
+
+  return(post_mean_lambda)
+
+}
+
+# input N and E format: Nij$frequency, Eij$baseline
+#' @rdname posterior
+#' @aliases Posteror_MGPS_log
+#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+#' @export
+Posteror_MGPS_log = function(alpha1, beta1, alpha2, beta2, pi, N, E){
+  # calculate Qx: the posterior probability that lambda came fromt he first component of the mixtrue, given N = x.
+  Qx_1 = pi*dnbinom(N, size = alpha1, prob = beta1/(E + beta1))
+  Qx_2 = (1 - pi)*dnbinom(N, size = alpha2, prob = beta2/(E + beta2))
+  Qx = Qx_1/(Qx_1 + Qx_2)
+
+  # calculate posterior expectation of lambda|N:
+  post_mean_lambda = Qx*((digamma(alpha1 + N) - log(beta1) + E)) + (1 - Qx)*((digamma(alpha2 + N) - log(beta2) + E))
+
+  return(post_mean_lambda)
 
 }
