@@ -24,16 +24,6 @@
 #  assuming independence
 # +-x +-x +-x +-x +-x +-x +-x +-x
 
-LSE_R <- function(vec){
-  n.vec <- length(vec)
-  vec <- sort(vec, decreasing = TRUE)
-  Lk <- vec[1]
-  for (k in 1:(n.vec-1)) {
-    Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
-  }
-  return(Lk)
-}
-
 #' @rdname HZINB_independence
 #' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
 
@@ -48,7 +38,7 @@ HZINB_independence = function(grid_a, grid_b, grid_omega, init_pi_k, init_pi_l, 
   H = length(grid_omega)
 
   #install.packages("countreg", repos="http://R-Forge.R-project.org")
-  library(countreg)
+  #library(countreg)
 
   all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
   colnames(all_combinations) = c("a_j", "b_j", "omega_j")

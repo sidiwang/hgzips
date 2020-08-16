@@ -22,9 +22,9 @@ MGPS_uni_opt(alpha.par, beta.par, pi.par, N, E, weight, iterations, Loglik)
 
 \item{pi.par}{initial xxxxxxx?}
 
-\item{Loglik}{whether to return the loglikelihood of each iteration or not (TRUE or FALSE)}
+\item{iterations}{number of EM algorithm iterations to run}
 
-\item{iteration}{number of EM algorithm iterations to run}
+\item{Loglik}{whether to return the loglikelihood of each iteration or not (TRUE or FALSE)}
 }
 \value{
 a list of estimated parameters and their corresponding loglikelihood

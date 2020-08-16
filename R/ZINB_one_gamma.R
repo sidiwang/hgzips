@@ -20,17 +20,6 @@
 ##  data squashing ZINB one gamma
 ################################################
 
-
-LSE_R <- function(vec){
-  n.vec <- length(vec)
-  vec <- sort(vec, decreasing = TRUE)
-  Lk <- vec[1]
-  for (k in 1:(n.vec-1)) {
-    Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
-  }
-  return(Lk)
-}
-
 #' @rdname ZINB_one_gamma
 #'
 #' @return a list of estimated parameters and their corresponding loglikelihood

@@ -2,11 +2,8 @@
 % Please edit documentation in R/ZINB_one_gamma.R
 \name{ZINB_one_gamma}
 \alias{ZINB_one_gamma}
-\alias{LSE_R}
 \title{HGZIPS - ZINB (one gamma)}
 \usage{
-LSE_R(vec)
-
 ZINB_one_gamma(alpha, beta, omega, N, E, weight, iteration, Loglik)
 }
 \arguments{

@@ -71,7 +71,7 @@ rawProcessing = function(rawdata, frequency_threshold, data.squashing = FALSE){
 
      } else if (data.squashing == TRUE) {
 
-    if (!require('openEBGM')) install.packages('openEBGM'); library('openEBGM')
+    #if (!require('openEBGM')) install.packages('openEBGM'); library('openEBGM')
 
     small_rename = small_tidy[, c("primaryid", "PT", "prod_ai")]
     colnames(small_rename) = c("id", "var1", "var2")

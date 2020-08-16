@@ -2,11 +2,8 @@
 % Please edit documentation in R/HZINB_independence.R
 \name{HZINB_independence}
 \alias{HZINB_independence}
-\alias{LSE_R}
 \title{HGZIPS - HZINB ( assuming independence)}
 \usage{
-LSE_R(vec)
-
 HZINB_independence(
   grid_a,
   grid_b,
