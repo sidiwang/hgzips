@@ -56,21 +56,21 @@ posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_kl
 
   for (j in 1:ncol(N_ij)){
     for (m in 1:nrow(all_combinations)){
-      joint_probs[m,j] = sum(emdbook::dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], pi = all_combinations$omega_j[m], log = TRUE))
+      joint_probs[m,j] = sum(emdbook::dzinbinom(N_ij[,j], mu = (E_ij[,j]/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], zprob = all_combinations$omega_j[m], log = TRUE))
     }
   }
 
   pi_klh_all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
   colnames(pi_klh_all_combinations) = c("K", "L", "H")
-  pi_klh_all_combinations$K = rep(pi_klh_final_a_j[1,], 100)
+  pi_klh_all_combinations$K = rep(pi_klh_final_a_j, 100)
 
   for (i in c(1:L)){
-    pi_klh_all_combinations$L[((i - 1)*100 + 1):(i*100)] = rep(pi_klh_final_b_j[1,][i], 100)
+    pi_klh_all_combinations$L[((i - 1)*100 + 1):(i*100)] = rep(pi_klh_final_b_j[i], 100)
   }
 
   for (i in c(1:H)){
     row_num = c(((i - 1)*10 + 1):(i*10))
-    pi_klh_all_combinations$H[row_num] = rep(pi_klh_final_omega_j[1,][i], 10)
+    pi_klh_all_combinations$H[row_num] = rep(pi_klh_final_omega_j[i], 10)
   }
 
   pi_klh_all_combinations$H = rep(pi_klh_all_combinations$H[1:100], 10)

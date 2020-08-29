@@ -86,7 +86,8 @@ ZINB_two_gamma = function(alpha1, beta1, alpha2, beta2, pi, omega, N, E, weight,
       return(-max)
     }
 
-    theta_EM[i + 1, 1:6] = optim(c(theta_EM$alpha1[i], theta_EM$beta1[i], theta_EM$alpha2[i], theta_EM$beta2[i], theta_EM$pi[i], theta_EM$omega[i]), ZNegBin, method = "BFGS", u = u_ij, N = N, E = E, weight = weight, Ts = T_ij)$par
+   # theta_EM[i + 1, 1:6] = optim(c(theta_EM$alpha1[i], theta_EM$beta1[i], theta_EM$alpha2[i], theta_EM$beta2[i], theta_EM$pi[i], theta_EM$omega[i]), ZNegBin, method = "BFGS", u = u_ij, N = N, E = E, weight = weight, Ts = T_ij)$par
+     theta_EM[i + 1, 1:6] = stats::nlminb(c(theta_EM$alpha1[i], theta_EM$beta1[i], theta_EM$alpha2[i], theta_EM$beta2[i], theta_EM$pi[i], theta_EM$omega[i]), ZNegBin, u = u_ij, N = N, E = E, weight = weight, Ts = T_ij)$par
 
   }
 

@@ -16,9 +16,7 @@
 #' @param Loglik whether to return the loglikelihood of each iteration or not (TRUE or FALSE)
 #' @seealso
 #'
-###########################################################################
-## Zero-Inflated Model (ZINB), only one omega for all observations (optim)
-###########################################################################
+
 
 # +-x +-x +-x +-x +-x +-x +-x +-x
 #  assuming independence

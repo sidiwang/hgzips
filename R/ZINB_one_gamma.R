@@ -70,7 +70,8 @@ ZINB_one_gamma = function(alpha, beta, omega, N, E, weight, iteration, Loglik){
       return(-max)
     }
 
-    theta_EM[i + 1, 1:2] = optim(c(theta_EM$alpha[i], theta_EM$beta[i]), ZNegBin, method = "BFGS", N = N_E_weight$N, E = N_E_weight$E, weight = N_E_weight$weight, Ts = T_ij)$par
+    #theta_EM[i + 1, 1:2] = optim(c(theta_EM$alpha[i], theta_EM$beta[i]), ZNegBin, method = "BFGS", N = N_E_weight$N, E = N_E_weight$E, weight = N_E_weight$weight, Ts = T_ij)$par
+    theta_EM[i + 1, 1:2] =  stats::nlminb(c(theta_EM$alpha[i], theta_EM$beta[i]), ZNegBin, N = N_E_weight$N, E = N_E_weight$E, weight = N_E_weight$weight, Ts = T_ij)$par
 
   }
 
