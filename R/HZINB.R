@@ -1,8 +1,8 @@
 #' HGZIPS - HZINB (not assuming independence)
 #'
-#' This HZINB function.........
-#' @name HZINB_one_gamma
+#' This \code{HZINB_one_gamma} function finds hyperparameter estimates by implementing the Expectation-Maximization (EM) algorithm and hierarchical zero-inflated negative binomial model with one gamma component.
 #'
+#' @name HZINB_one_gamma
 #' @import emdbook
 #' @import stats
 #' @import pscl
@@ -21,6 +21,9 @@
 #' @param K number of a_j in grid
 #' @param L number of b_j in grid
 #' @param H number of omega_j in grid
+#' @param zeroes A logical scalar specifying if zero counts should be included.
+#' @param N_star the minimum Nij count size to be used for hyperparameter estimation. If zeroes are included in Nij vector, please set N_star = NULL
+#'
 #'
 #'
 ##########################################################
@@ -30,9 +33,8 @@
 # input N = N_ij, E = E_ij
 
 #' @rdname HZINB_one_gamma
-#' @aliases parRangeCheck
+#' @return \code{parRangeCheck} the estimated a_j, b_j and omega_j for each drug (j)
 #' parRangeCheck
-#' @return check the range of a_j, b_j, and omega_j for the dataset
 #' @export
 parRangeCheck = function(N_ij, E_ij){
 
@@ -67,10 +69,10 @@ parRangeCheck = function(N_ij, E_ij){
 
 
 #' @rdname HZINB_one_gamma
-#' @aliases grid_HZINB
+#' @return \code{grid_HZINB} build a suitable grid of a_j, b_j, and omega_j for implementing HZINB
 #' grid_HZINB
-#' @return a suitable grid of a_j, b_j, and omega_j for implementing HZINB
 #' @export
+#'
 grid_HZINB = function(a_j, b_j, omega_j, K, L, H){
 
   grid = as.data.frame(matrix(NA, max(c(K, L, H)), 3))
@@ -101,97 +103,173 @@ grid_HZINB = function(a_j, b_j, omega_j, K, L, H){
 # +-x +-x +-x +-x +-x +-x +-x +-x
 
 #' @rdname HZINB_one_gamma
-#' @aliases HZINB_one_gamma
+#' @return \code{HZINB_one_gamma} a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+#' \itemize{
+#' \item \code{theta_EM} Estimate of hyperparameters for each EM iteration
+#' \item \code{llh} logliklihood for each EM iteration (optional)
+#' }
 #' HZINB_one_gamma
-#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
 #' @export
-HZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, dataset, iteration, Loglik){
+HZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, dataset, iteration, Loglik = FALSE, zeroes = FALSE, N_star = 1){
 
-  K = length(grid_a)
-  L = length(grid_b)
-  H = length(grid_omega)
-
-#  if (!require('countreg')) install.packages('countreg'); library('countreg')
-
-  all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
-  colnames(all_combinations) = c("a_j", "b_j", "omega_j")
-  all_combinations$a_j = rep(grid_a, 100)
-
-  for (i in c(1:L)){
-    all_combinations$b_j[((i - 1)*100 + 1):(i*100)] = rep(grid_b[i], 100)
-  }
-
-  for (i in c(1:H)){
-    row_num = c(((i - 1)*10 + 1):(i*10))
-    all_combinations$omega_j[row_num] = rep(grid_omega[i], 10)
-  }
-
-  all_combinations$omega_j = rep(all_combinations$omega_j[1:100], 10)
-
-  ## EM algorithm
-
-  # initialization
-  N.EM <- iteration  # number of E-M iterations
-  #iteration_50 = pi_klh[50,]
-
-  pi_klh = matrix(NA, N.EM + 1, K*L*H)
-  pi_klh[1,] = init_pi_klh
-
-  denominator = rep(NA, length(dataset))
-  numerator = rep(NA, length(dataset))
-  #ratio = rep(NA, ncol(N_ij))
-  joint_probs = as.data.frame(matrix(NA, nrow(all_combinations), length(dataset)))
-
-  for (j in 1:length(dataset)){
-    for (m in 1:nrow(all_combinations)){
-      joint_probs[m,j] = sum(dataset[[j]]$weight * emdbook::dzinbinom(dataset[[j]]$N, mu = (dataset[[j]]$E/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], zprob = all_combinations$omega_j[m], log = TRUE))
+  for (k in 1:length(dataset)){
+    if (!is.null(N_star)){
+      dataset[[k]] = subset(dataset[[k]], N >= N_star)
     }
   }
 
-  LSE_R <- function(vec){
-    n.vec <- length(vec)
-    vec <- sort(vec, decreasing = TRUE)
-    Lk <- vec[1]
-    for (k in 1:(n.vec-1)) {
-      Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
+  if (zeroes == FALSE){
+    K = length(grid_a)
+    L = length(grid_b)
+
+    #  if (!require('countreg')) install.packages('countreg'); library('countreg')
+
+    all_combinations = as.data.frame(matrix(NA, K*L, 2))
+    colnames(all_combinations) = c("a_j", "b_j")
+    all_combinations$a_j = rep(grid_a, 10)
+
+    for (i in c(1:L)){
+      all_combinations$b_j[((i - 1)*10 + 1):(i*10)] = rep(grid_b[i], 10)
     }
-    return(Lk)
-  }
 
-  ratio = as.data.frame(matrix(NA, K*H*L, length(dataset)))
+    ## EM algorithm
 
-  for (i in c(1 : N.EM)) {
-    print(i)
-    for (m in 1:nrow(all_combinations)){
-      for (j in 1:length(dataset)){
-        ratio[m,j] = log(pi_klh[i, m]) + joint_probs[m,j] - LSE_R((log(pi_klh[i,]) + joint_probs[,j])[which((log(pi_klh[i,]) + joint_probs[,j]) != "NaN")])
+    # initialization
+    N.EM <- iteration  # number of E-M iterations
+    #iteration_50 = pi_klh[50,]
+
+    pi_klh = matrix(NA, N.EM + 1, K*L)
+    pi_klh[1,] = init_pi_klh
+
+    denominator = rep(NA, length(dataset))
+    numerator = rep(NA, length(dataset))
+    #ratio = rep(NA, ncol(N_ij))
+    joint_probs = as.data.frame(matrix(NA, nrow(all_combinations), length(dataset)))
+
+
+    for (j in 1:length(dataset)){
+      for (m in 1:nrow(all_combinations)){
+        joint_probs[m,j] = sum(dataset[[j]]$weight * (dnbinom(dataset[[j]]$N, size = all_combinations$a_j[m], prob = all_combinations$b_j[m]/(dataset[[j]]$E + all_combinations$b_j[m]), log = TRUE) - log1p(-pnbinom(N_star - 1, size = all_combinations$a_j[m], prob = all_combinations$b_j[m]/(dataset[[j]]$E + all_combinations$b_j[m]), log = TRUE))))
       }
     }
 
-    all = cbind(all_combinations, ratio)
-    all$sum = rowSums(exp(ratio))
-    overallSum = sum(all$sum, na.rm = TRUE)
-
-    pi_klh[i + 1, ] = (all$sum)/overallSum
-  }
-
-  if (Loglik == TRUE){
-
-    llh_j = rep(NA, length(dataset))
-    llh = rep(NA, N.EM)
-
-    for (i in 1:N.EM){
-      for (j in 1:length(dataset)){
-        llh_j[j] = unlist(LSE_R(log(pi_klh[i,]) + joint_probs[,j]))
+    LSE_R <- function(vec){
+      n.vec <- length(vec)
+      vec <- sort(vec, decreasing = TRUE)
+      Lk <- vec[1]
+      for (k in 1:(n.vec-1)) {
+        Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
       }
-      llh[i] = sum(llh_j)
+      return(Lk)
     }
+
+    ratio = as.data.frame(matrix(NA, K*H, length(dataset)))
+
+    for (i in c(1 : N.EM)) {
+      print(i)
+      for (m in 1:nrow(all_combinations)){
+        for (j in 1:length(dataset)){
+          ratio[m,j] = log(pi_klh[i, m]) + joint_probs[m,j] - LSE_R((log(pi_klh[i,]) + joint_probs[,j])[which((log(pi_klh[i,]) + joint_probs[,j]) != "NaN")])
+        }
+      }
+
+      all = cbind(all_combinations, ratio)
+      all$sum = rowSums(exp(ratio))
+      overallSum = sum(all$sum, na.rm = TRUE)
+
+      pi_klh[i + 1, ] = (all$sum)/overallSum
+    }
+
+    result = list("pi_klh" = cbind(all_combinations, pi_klh))
 
   } else {
-    llh = NULL
-  }
 
-  result = list("pi_klh" = cbind(all_combinations, pi_klh), "Loglik" = llh)
+    K = length(grid_a)
+    L = length(grid_b)
+    H = length(grid_omega)
+
+    #  if (!require('countreg')) install.packages('countreg'); library('countreg')
+
+    all_combinations = as.data.frame(matrix(NA, K*L*H, 3))
+    colnames(all_combinations) = c("a_j", "b_j", "omega_j")
+    all_combinations$a_j = rep(grid_a, 100)
+
+    for (i in c(1:L)){
+      all_combinations$b_j[((i - 1)*100 + 1):(i*100)] = rep(grid_b[i], 100)
+    }
+
+    for (i in c(1:H)){
+      row_num = c(((i - 1)*10 + 1):(i*10))
+      all_combinations$omega_j[row_num] = rep(grid_omega[i], 10)
+    }
+
+    all_combinations$omega_j = rep(all_combinations$omega_j[1:100], 10)
+
+    ## EM algorithm
+
+    # initialization
+    N.EM <- iteration  # number of E-M iterations
+    #iteration_50 = pi_klh[50,]
+
+    pi_klh = matrix(NA, N.EM + 1, K*L*H)
+    pi_klh[1,] = init_pi_klh
+
+    denominator = rep(NA, length(dataset))
+    numerator = rep(NA, length(dataset))
+    #ratio = rep(NA, ncol(N_ij))
+    joint_probs = as.data.frame(matrix(NA, nrow(all_combinations), length(dataset)))
+
+    for (j in 1:length(dataset)){
+      for (m in 1:nrow(all_combinations)){
+        joint_probs[m,j] = sum(dataset[[j]]$weight * emdbook::dzinbinom(dataset[[j]]$N, mu = (dataset[[j]]$E/all_combinations$b_j[m])*all_combinations$a_j[m], size = all_combinations$a_j[m], zprob = all_combinations$omega_j[m], log = TRUE))
+      }
+    }
+
+    LSE_R <- function(vec){
+      n.vec <- length(vec)
+      vec <- sort(vec, decreasing = TRUE)
+      Lk <- vec[1]
+      for (k in 1:(n.vec-1)) {
+        Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
+      }
+      return(Lk)
+    }
+
+    ratio = as.data.frame(matrix(NA, K*H*L, length(dataset)))
+
+    for (i in c(1 : N.EM)) {
+      print(i)
+      for (m in 1:nrow(all_combinations)){
+        for (j in 1:length(dataset)){
+          ratio[m,j] = log(pi_klh[i, m]) + joint_probs[m,j] - LSE_R((log(pi_klh[i,]) + joint_probs[,j])[which((log(pi_klh[i,]) + joint_probs[,j]) != "NaN")])
+        }
+      }
+
+      all = cbind(all_combinations, ratio)
+      all$sum = rowSums(exp(ratio))
+      overallSum = sum(all$sum, na.rm = TRUE)
+
+      pi_klh[i + 1, ] = (all$sum)/overallSum
+    }
+
+    if (Loglik == TRUE){
+
+      llh_j = rep(NA, length(dataset))
+      llh = rep(NA, N.EM)
+
+      for (i in 1:N.EM){
+        for (j in 1:length(dataset)){
+          llh_j[j] = unlist(LSE_R(log(pi_klh[i,]) + joint_probs[,j]))
+        }
+        llh[i] = sum(llh_j)
+      }
+
+    } else {
+      llh = NULL
+    }
+
+    result = list("pi_klh" = cbind(all_combinations, pi_klh), "Loglik" = llh)
+  }
   return(result)
 
 }

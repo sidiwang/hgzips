@@ -2,7 +2,7 @@
 % Please edit documentation in R/HZINB_independence.R
 \name{HZINB_independence}
 \alias{HZINB_independence}
-\title{HGZIPS - HZINB ( assuming independence)}
+\title{HGZIPS - HZINB (assuming independence)}
 \usage{
 HZINB_independence(
   grid_a,
@@ -13,7 +13,9 @@ HZINB_independence(
   init_pi_h,
   dataset,
   iteration,
-  Loglik
+  Loglik = FALSE,
+  zeroes = FALSE,
+  N_star = 1
 )
 }
 \arguments{
@@ -34,14 +36,20 @@ HZINB_independence(
 \item{iteration}{number of EM algorithm iterations to run}
 
 \item{Loglik}{whether to return the loglikelihood of each iteration or not (TRUE or FALSE)}
+
+\item{zeroes}{A logical scalar specifying if zero counts should be included.}
+
+\item{N_star}{the minimum Nij count size to be used for hyperparameter estimation. If zeroes are included in Nij vector, please set N_star = NULL
+
+HZINB_independence}
 }
 \value{
-a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
-HZINB_independence
+\code{HZINB_independence} a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+\itemize{
+\item \code{theta_EM} Estimate of hyperparameters for each EM iteration
+\item \code{llh} logliklihood for each EM iteration (optional)
+}
 }
 \description{
-This HZINB function.........
-}
-\seealso{
-
+This \code{HZINB_independence} function finds hyperparameter estimates by implementing the Expectation-Maximization (EM) algorithm and hierarchical zero-inflated negative binomial model with one gamma component.
 }

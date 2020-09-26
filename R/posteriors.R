@@ -24,10 +24,10 @@
 
 
 #' @rdname posterior
-#' @aliases posterior_abomega
 #' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
 #' @export
-posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_klh_final_b_j, pi_klh_final_omega_j, N_ij, E_ij){
+#'
+posterior_abol = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_klh_final_b_j, pi_klh_final_omega_j, N_ij, E_ij){
 
   a_j = grid_a
   b_j = grid_b
@@ -90,6 +90,8 @@ posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_kl
   expectation_a_j = rep(NA, ncol(N_ij))
   expectation_b_j = rep(NA, ncol(N_ij))
   expectation_omega_j = rep(NA, ncol(N_ij))
+  expectation_lambda_j = matrix(NA, nrow(N_ij), ncol(N_ij))
+  numerator_lambda_j = rep(NA, nrow(N_ij))
 
   for (j in 1 : ncol(N_ij)){
 
@@ -107,36 +109,20 @@ posterior_abomega = function(grid_a, grid_b, grid_omega, pi_klh_final_a_j, pi_kl
     numerator_omega_j = LSE_R(joint_probs[, j] + log(all_combinations$omega_j) + log(pi_klh_all_combinations$prod))
     expectation_omega_j[j] = exp(numerator_omega_j - denominator_omega_j)
 
+    denominator_lambda_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    for (i in 1 : nrow(N_ij)){
+      numerator_lambda_j[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j])/(all_combinations$b_j + E_ij[i, j])) + log(pi_klh_all_combinations$prod))
+    }
+    expectation_lambda_j[, j] = exp(numerator_lambda_j - denominator_lambda_j)
+
   }
 
-  result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j)
+  result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j, "posterior_lambda_ij" = expectation_lambda_j)
   return(result)
 
 }
 
 
-
-
-
-#' @rdname posterior
-#' @aliases posterior_HZINB
-#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
-#' @export
-# N = N_ij, E = E_ij
-
-posterior_HZINB = function(posterior_a_j, posterior_b_j, posterior_omega_j, N_ij, E_ij){
-
-  post_HZINB = matrix(NA, nrow(N_ij), ncol(N_ij))
-
-  for (j in 1 : ncol(N_ij)){
-    post_HZINB[, j] =  (posterior_a_j[j] + N_ij[, j])/(posterior_b_j[j] + E_ij[, j])
-    Qx = posterior_omega_j[j]/(posterior_omega_j[j] + (1 - posterior_omega_j[j])*dnbinom(0, size = posterior_a_j[j], prob = posterior_b_j[j]/E_ij[, j] + posterior_b_j[j]))
-    post_HZINB[which(N_ij[, j] == 0, arr.ind = TRUE)] = (Qx*posterior_a_j[j]/posterior_b_j[j] + (1 - Qx)*posterior_a_j[j]/(posterior_b_j[j] + E_ij[, j]))[which(N_ij[, j] == 0, arr.ind = TRUE)]
-
-  }
-
-  return(post_HZINB)
-}
 
 
 

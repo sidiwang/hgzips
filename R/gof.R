@@ -1,28 +1,34 @@
-#' HGZIPS - Data Squashing HZINB (not assuming independence)
+#' goodness-of-fit | fitted probabilities | observed probabilities
 #'
-#' This Data Squashing HZINB function.........
+#' Functions to calculate the goodness-of-fit, fitted probabilities, or observed probabilities of different models
+#'
+#'
 #' @name gof
 #' @import stats
 #'
-#' @param N 1
-#' @param E 2
-#' @param N_ij 3
-#' @param E_ij 4
-#' @param alpha1 5
-#' @param alpha2 6
-#' @param beta1 1
-#' @param beta2 2
-#' @param pi 3
-#' @param omega 2
-#' @param alpha 3
-#' @param beta 4
-#' @param posterior_a_j 2
-#' @param posterior_b_j 2
-#' @param posterior_omega_j 23
-#' @param fitted_prob 3
-#' @param observed_freq 4
-#' @return observed frequencies, estimated frequencies and goodness of fit
-
+#' @param N vector of Nij values
+#' @param E vector of Eij values
+#' @param N_ij matrix of N_ij values, i - AE, j - drugs
+#' @param E_ij matrix of E_ij values, corresponding to N_ij
+#' @param posterior_a_j vector of posterior mean a_j values for each drug (j)
+#' @param posterior_b_j vector of posterior mean b_j values for each drug (j)
+#' @param posterior_omega_j vector of posterior mean omega_j values for each drug (j)
+#' @param fitted_prob a dataset of calculated fitted probability for each AE and drug pair
+#' @param observed_freq a dataset of calculated observed probability for each AE and drug pair
+#' @details
+#' Functions calculate observed probability for each AE and drug pair:
+#' \code{observed_freqencies} for MGPS, ZINB one gamma and ZINB two gamma models
+#' \code{observed_freq_HZINB} for HZINB model
+#'
+#' Functions calculate fitted probability for each AE and drug pair:
+#' \code{fitted_MGPS} for MGPS model
+#' \code{fitted_ZINB} for ZINB one gamma model
+#' \code{fitted_ZINB_two_gamma} for ZINB two gamma model
+#' \code{fitted_HZINB_one_gamma_independence} for HZINB model
+#'
+#' Function calculate goodness of fit of a model:
+#' \code{gof}
+#'
 #' @seealso
 #'
 ##############
@@ -33,7 +39,7 @@
 # input N_ij format
 # output observed frequencies
 #' @rdname gof
-#' @return observed frequencies
+#' @return \code{observed_freqencies} functions returns the observed probability for MGPS model.
 #' observed_frequencies
 #' @export
 observed_freqencies = function(N){
@@ -54,7 +60,7 @@ observed_freqencies = function(N){
 }
 
 #' @rdname gof
-#' @return ZINB fitted values
+#' @return \code{fitted_ZINB} functions returns the fitted probability for ZINB one gamma model.
 #' fitted_ZINB
 #' @export
 # input N = N_ij, E = E_ij
@@ -69,7 +75,7 @@ fitted_ZINB = function(alpha, beta, omega, N, E){
 }
 
 #' @rdname gof
-#' @return fitted MGPS
+#' @return \code{fitted_MGPS} functions returns the fitted probability for MGPS model.
 #' fitted MGPS
 #' @export
 # input N = N_ij, E = E_ij
@@ -85,7 +91,7 @@ fitted_MGPS = function(alpha1, alpha2, beta1, beta2, pi, N, E){
 
 
 #' @rdname gof
-#' @return fitted ZINB two gamma
+#' @return \code{fitted_ZINB_two_gamma} functions returns the fitted probability for ZINB two gamma model.
 #' fitted ZINB two gamma
 #' @export
 # input N = N_ij, E = E_ij
@@ -101,7 +107,7 @@ fitted_ZINB_two_gamma = function(alpha1, alpha2, beta1, beta2, pi, omega, N, E){
 
 
 #' @rdname gof
-#' @return observed_freq_HZINB
+#' @return \code{observed_freq_HZINB} functions returns the observed probability for HZINB model.
 #' observed_freq_HZINB
 #' @export
 observed_freq_HZINB = function(N_ij){
@@ -124,7 +130,7 @@ observed_freq_HZINB = function(N_ij){
 
 
 #' @rdname gof
-#' @return fitted_HZINB_one_gamma_independence
+#' @return \code{fitted_HZINB_one_gamma_independence} functions returns the fitted probability for HZINB model.
 #' fitted_HZINB_one_gamma_independence
 #' @export
 fitted_HZINB_one_gamma_independence = function(posterior_a_j, posterior_b_j, posterior_omega_j, N_ij, E_ij){
@@ -144,7 +150,7 @@ fitted_HZINB_one_gamma_independence = function(posterior_a_j, posterior_b_j, pos
 }
 
 #' @rdname gof
-#' @return gof
+#' @return \code{gof} functions returns the goodness-of-fit of a model.
 #' gof
 #' @export
 gof = function(fitted_prob, observed_freq){

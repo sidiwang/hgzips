@@ -2,7 +2,7 @@
 % Please edit documentation in R/ZINB_two_gamma.R
 \name{ZINB_two_gamma}
 \alias{ZINB_two_gamma}
-\title{HGZIPS - ZINB (mixture of two gamma)}
+\title{Zero-Inflated Negative Binomial - Two Gamma Component}
 \usage{
 ZINB_two_gamma(
   alpha1,
@@ -15,7 +15,9 @@ ZINB_two_gamma(
   E,
   weight,
   iteration,
-  Loglik
+  Loglik = FALSE,
+  zeroes = FALSE,
+  N_star = 1
 )
 }
 \arguments{
@@ -27,9 +29,9 @@ ZINB_two_gamma(
 
 \item{beta2}{initial rate parameter value of the second gamma distribution for implementing the EM algprithm}
 
-\item{pi}{initial xxxxxxx?}
+\item{pi}{initial mixing proportion guess of the two gamma distributions}
 
-\item{omega}{initial xxxxxxx?}
+\item{omega}{initial weight for observing a true zero (according to zero-inflated poission distribution)}
 
 \item{N}{vector of Nij values}
 
@@ -40,13 +42,33 @@ ZINB_two_gamma(
 \item{iteration}{number of EM algorithm iterations to run}
 
 \item{Loglik}{whether to return the loglikelihood of each iteration or not (TRUE or FALSE)}
+
+\item{zeroes}{A logical scalar specifying if zero counts should be included.}
+
+\item{N_star}{the minimum Nij count size to be used for hyperparameter estimation. If zeroes are included in Nij vector, please set N_star = NULL}
 }
 \value{
 a list of estimated parameters and their corresponding loglikelihood
+if Nij = 0 is included in the input dataset
+\itemize{
+\item \code{theta_EM} Estimate of hyperparameters for each EM iteration
+\item \code{llh} logliklihood for each EM iteration (optional)
+}
+if the minimum Nij count size included in the input dataset is not 0"
+\itemize{
+\item \code{theta_EM} Estimate of hyperparameters for each EM iteration
+}
 }
 \description{
-This ZINB function.........
+This \code{ZINB_two_gamma} function finds hyperparameter estimates by implementing the Expectation-Maximization (EM) algorithm and zero-inflated negative binomial model with two gamma components. \code{nlminb} function is used to maximize the loglikelihood function.
+}
+\examples{
+Nij = rnbinom(100, size = 2, prob = 0.3)
+Eij = runif(100, 0, 2)
+par_estimated = ZINB_two_gamma(0.2, 0.1, 2, 4, 0.33, 0.3, N = squashed$N, E = squashed$E, weight = squashed$weight, 10, Loglik = TRUE, zeroes = FALSE, N_star = 1)
+par_estimated$theta_EM
+
 }
 \seealso{
-
+openEBGM, nlminb
 }

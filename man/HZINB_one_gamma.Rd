@@ -17,7 +17,9 @@ HZINB_one_gamma(
   init_pi_klh,
   dataset,
   iteration,
-  Loglik
+  Loglik = FALSE,
+  zeroes = FALSE,
+  N_star = 1
 )
 }
 \arguments{
@@ -50,14 +52,25 @@ HZINB_one_gamma(
 \item{iteration}{number of EM algorithm iterations to run}
 
 \item{Loglik}{whether to return the loglikelihood of each iteration or not (TRUE or FALSE)}
+
+\item{zeroes}{A logical scalar specifying if zero counts should be included.}
+
+\item{N_star}{the minimum Nij count size to be used for hyperparameter estimation. If zeroes are included in Nij vector, please set N_star = NULL}
 }
 \value{
-check the range of a_j, b_j, and omega_j for the dataset
+\code{parRangeCheck} the estimated a_j, b_j and omega_j for each drug (j)
+parRangeCheck
 
-a suitable grid of a_j, b_j, and omega_j for implementing HZINB
+\code{grid_HZINB} build a suitable grid of a_j, b_j, and omega_j for implementing HZINB
+grid_HZINB
 
-a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+\code{HZINB_one_gamma} a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+\itemize{
+\item \code{theta_EM} Estimate of hyperparameters for each EM iteration
+\item \code{llh} logliklihood for each EM iteration (optional)
+}
+HZINB_one_gamma
 }
 \description{
-This HZINB function.........
+This \code{HZINB_one_gamma} function finds hyperparameter estimates by implementing the Expectation-Maximization (EM) algorithm and hierarchical zero-inflated negative binomial model with one gamma component.
 }

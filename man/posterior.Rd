@@ -2,15 +2,14 @@
 % Please edit documentation in R/posteriors.R
 \name{posterior}
 \alias{posterior}
-\alias{posterior_abomega}
-\alias{posterior_HZINB}
+\alias{posterior_abol}
 \alias{post_mean_lambda_ZINB}
 \alias{post_mean_loglambda_ZINB}
 \alias{Posteror_MGPS}
 \alias{Posteror_MGPS_log}
 \title{HGZIPS - calculating the posterior value of HZINB a_j, b_j and omega_j}
 \usage{
-posterior_abomega(
+posterior_abol(
   grid_a,
   grid_b,
   grid_omega,
@@ -20,8 +19,6 @@ posterior_abomega(
   N_ij,
   E_ij
 )
-
-posterior_HZINB(posterior_a_j, posterior_b_j, posterior_omega_j, N_ij, E_ij)
 
 post_mean_lambda_ZINB(alpha, beta, N, E)
 
@@ -49,8 +46,6 @@ Posteror_MGPS_log(alpha1, beta1, alpha2, beta2, pi, N, E)
 \item{E_ij}{matrix of E_ij, i = AE, j = drugs}
 }
 \value{
-a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
-
 a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
 
 posterior mean of logged lambda
