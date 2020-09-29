@@ -44,6 +44,7 @@ HZINB_independence = function(grid_a, grid_b, grid_omega, init_pi_k, init_pi_l, 
   if (zeroes == FALSE){
     K = length(grid_a)
     L = length(grid_b)
+    #grid_omega = grid_omega
 
     #  if (!require('countreg')) install.packages('countreg'); library('countreg')
 
@@ -91,7 +92,7 @@ HZINB_independence = function(grid_a, grid_b, grid_omega, init_pi_k, init_pi_l, 
       return(Lk)
     }
 
-    ratio = as.data.frame(matrix(NA, K*H, length(dataset)))
+    ratio = as.data.frame(matrix(NA, K*L, length(dataset)))
 
     for (i in 1:(N.EM + 1)) {
 

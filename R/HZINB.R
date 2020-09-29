@@ -163,7 +163,7 @@ HZINB_one_gamma = function(grid_a, grid_b, grid_omega, init_pi_klh, dataset, ite
       return(Lk)
     }
 
-    ratio = as.data.frame(matrix(NA, K*H, length(dataset)))
+    ratio = as.data.frame(matrix(NA, K*L, length(dataset)))
 
     for (i in c(1 : N.EM)) {
       print(i)
