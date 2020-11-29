@@ -124,7 +124,7 @@ ZINB_one_gamma = function(alpha, beta, omega, N, E, weight, iteration, Loglik = 
       return(-max)
     }
 
-    par =  stats::nlminb(c(theta_EM$alpha[i], theta_EM$beta[i]), ZNegBin, N = N_E_weight$N, E = N_E_weight$E, weight = N_E_weight$weight)$par
+    par =  stats::nlminb(c(alpha, beta), ZNegBin, N = N_E_weight$N, E = N_E_weight$E, weight = N_E_weight$weight)$par
     alpha = par[1]
     beta = par[2]
 

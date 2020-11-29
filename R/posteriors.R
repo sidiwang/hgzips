@@ -1,4 +1,4 @@
-#' Posterior Means - calculating the posterior value of HZINB a_j, b_j and omega_j
+#' Posterior Means - calculating the posterior value of HZINB a1_j, b1_j, a2_j, b2_j, pi_j and omega_j
 #'
 #' @name posterior
 #'
@@ -25,6 +25,120 @@
 #' @return posterior mean of lambda (and/or posterior mean of a_j, b_j and omega_j)
 #' @export
 #'
+#'
+
+
+posterior_abol_two_gamma = function(grid_a1, grid_b1, grid_a2, grid_b2, grid_pi, grid_omega = NULL, pi_klh_final_a1_j, pi_klh_final_b1_j, pi_klh_final_a2_j, pi_klh_final_b2_j, pi_klh_final_pi_j, pi_klh_final_omega_j = NULL, N_ij, E_ij, zeroes = FALSE, N_star = 1){
+
+  a1_j = grid_a1
+  b1_j = grid_b1
+  a2_j = grid_a2
+  b2_j = grid_b2
+  pi_j = grid_pi
+  omega_j = grid_omega
+
+  K1 = length(grid_a1)
+  L1 = length(grid_b1)
+  K2 = length(grid_a2)
+  L2 = length(grid_b2)
+  M = length(grid_pi)
+  H = length(grid_omega)
+
+  all_combinations = expand.grid(grid_a1, grid_b1, grid_a2, grid_b2, grid_pi, grid_omega)
+  colnames(all_combinations) = c("a1_j", "b1_j", "a2_j", "b2_j", "m_j", "h_j")
+  joint_probs = as.data.frame(matrix(NA, nrow(all_combinations), ncol(N_ij)))
+
+  for (j in 1:ncol(N_ij)){
+    for (m in 1:nrow(all_combinations)){
+      zero_index = which(N_ij[,j] == 0)
+      non_z_index = which(N_ij[,j] != 0)
+      nb10 = dnbinom(0, size = all_combinations$a1_j[m], prob = all_combinations$b1_j[m]/(E_ij[zero_index, j] + all_combinations$b1_j[m]), log = TRUE)
+      nb20 = dnbinom(0, size = all_combinations$a2_j[m], prob = all_combinations$b2_j[m]/(E_ij[zero_index, j] + all_combinations$b2_j[m]), log = TRUE)
+      nb1 = dnbinom(N_ij[non_z_index, j], size = all_combinations$a1_j[m], prob = all_combinations$b1_j[m]/(E_ij[non_z_index, j] + all_combinations$b1_j[m]), log = TRUE)
+      nb2 = dnbinom(N_ij[non_z_index, j], size = all_combinations$a2_j[m], prob = all_combinations$b2_j[m]/(E_ij[non_z_index, j] + all_combinations$b2_j[m]), log = TRUE)
+
+      joint_probs[m,j] = sum((hgzips::log_sum_exp(all_combinations$h_j[m],  log(1 - all_combinations$h_j[m]) + (hgzips::log_sum_exp(log(all_combinations$m_j[m]) + nb10, log(1 - all_combinations$m_j[m]) + nb20))))
+                             + sum((log(1 - all_combinations$h_j[m]) + hgzips::log_sum_exp(log(all_combinations$m_j[m]) + nb1, log(1 - all_combinations$h_j[m]) + nb2))))
+    }
+  }
+
+  pi_klh_all_combinations = expand.grid(pi_klh_final_a1_j, pi_klh_final_b1_j, pi_klh_final_a2_j, pi_klh_final_b2_j, pi_klh_final_pi_j, pi_klh_final_omega_j)
+  colnames(pi_klh_all_combinations) = c("K1", "L1", "K2", "L2", "M", "H")
+
+  pi_klh_all_combinations$prod = apply(pi_klh_all_combinations[, c(1:6)], 1, prod)
+
+  LSE_R <- function(vec){
+    n.vec <- length(vec)
+    vec <- sort(vec, decreasing = TRUE)
+    Lk <- vec[1]
+    for (k in 1:(n.vec-1)) {
+      Lk <- max(vec[k+1], Lk) + log1p(exp(-abs(vec[k+1] - Lk)))
+    }
+    return(Lk)
+  }
+
+  expectation_a1_j = expectation_b1_j = expectation_a2_j = expectation_b2_j = expectation_pi_j = expectation_omega_j = rep(NA, ncol(N_ij))
+
+  expectation_lambda_j = var_lambda_j = matrix(NA, nrow(N_ij), ncol(N_ij))
+  numerator_lambda_j = numerator_lambda_j_var = rep(NA, nrow(N_ij))
+
+  for (j in 1 : ncol(N_ij)){
+
+    print(j)
+
+    denominator_a1_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    numerator_a1_j = LSE_R(joint_probs[, j] + log(all_combinations$a1_j) + log(pi_klh_all_combinations$prod))
+    expectation_a1_j[j] = exp(numerator_a1_j - denominator_a1_j)
+
+    denominator_b1_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    numerator_b1_j = LSE_R(joint_probs[, j] + log(all_combinations$b1_j) + log(pi_klh_all_combinations$prod))
+    expectation_b1_j[j] = exp(numerator_b1_j - denominator_b1_j)
+
+    denominator_a2_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    numerator_a2_j = LSE_R(joint_probs[, j] + log(all_combinations$a2_j) + log(pi_klh_all_combinations$prod))
+    expectation_a2_j[j] = exp(numerator_a2_j - denominator_a2_j)
+
+    denominator_b2_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    numerator_b2_j = LSE_R(joint_probs[, j] + log(all_combinations$b1_j) + log(pi_klh_all_combinations$prod))
+    expectation_b2_j[j] = exp(numerator_b2_j - denominator_b2_j)
+
+    denominator_pi_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    numerator_pi_j = LSE_R(joint_probs[, j] + log(all_combinations$m_j) + log(pi_klh_all_combinations$prod))
+    expectation_pi_j[j] = exp(numerator_pi_j - denominator_pi_j)
+
+    denominator_omega_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    numerator_omega_j = LSE_R(joint_probs[, j] + log(all_combinations$h_j) + log(pi_klh_all_combinations$prod))
+    expectation_omega_j[j] = exp(numerator_omega_j - denominator_omega_j)
+
+    denominator_lambda_j = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    denominator_lambda_j_var = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+    for (i in 1 : nrow(N_ij)){
+      Qx_1 = all_combinations$m_j * emdbook::dzinbinom(N_ij[i,j], mu = (E_ij[i,j]/all_combinations$b1_j)*all_combinations$a1_j, size = all_combinations$a1_j, zprob = all_combinations$h_j)
+      Qx_2 = (1 - all_combinations$m_j)*emdbook::dzinbinom(N_ij[i,j], mu = (E_ij[i,j]/all_combinations$b2_j)*all_combinations$a2_j, size = all_combinations$a2_j, zprob = all_combinations$h_j)
+      Qx = Qx_1/(Qx_1 + Qx_2)
+
+      # calculate posterior expectation of lambda|N:
+      lambda_formula = Qx*(all_combinations$a1_j + N_ij[i,j])/(all_combinations$b1_j + E_ij[i,j]) + (1 - Qx)*(all_combinations$a2_j + N_ij[i,j])/(all_combinations$b2_j + E_ij[i,j])
+      post_var_lambda = Qx*(1 - Qx)*((all_combinations$a1_j + N_ij[i,j])/(all_combinations$b1_j + E_ij[i,j]) - (all_combinations$a2_j + N_ij[i,j])/(all_combinations$b2_j + E_ij[i,j]))^2 + Qx*(all_combinations$a1_j + N_ij[i,j])/(all_combinations$b1_j + E_ij[i,j])^2 + (1 - Qx)*(all_combinations$a2_j + N_ij[i,j])/(all_combinations$b2_j + E_ij[i,j])^2
+
+      numerator_lambda_j[i] = LSE_R(joint_probs[, j] + log(lambda_formula) + log(pi_klh_all_combinations$prod))
+      numerator_lambda_j_var[i] = LSE_R(joint_probs[, j] + log(post_var_lambda) + log(pi_klh_all_combinations$prod))
+
+    }
+    expectation_lambda_j[, j] = exp(numerator_lambda_j - denominator_lambda_j)
+    var_lambda_j[, j] = exp(numerator_lambda_j_var - denominator_lambda_j_var)
+
+  }
+
+  result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j, "posterior_lambda_ij_expectation" = expectation_lambda_j, "posterior_lambda_ij_variance" = var_lambda_j)
+  return(result)
+
+}
+
+#' @rdname posterior
+#' @aliases posterior_abol
+#' @return posterior mean of lambda (and/or posterior mean of a_j, b_j and omega_j)
+#' @export
 posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, pi_klh_final_b_j, pi_klh_final_omega_j = NULL, pi_klh = NULL, N_ij, E_ij, dataset = NULL, zeroes = FALSE, N_star = 1){
 
   if (zeroes == TRUE){
@@ -94,8 +208,8 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
     expectation_a_j = rep(NA, ncol(N_ij))
     expectation_b_j = rep(NA, ncol(N_ij))
     expectation_omega_j = rep(NA, ncol(N_ij))
-    expectation_lambda_j = matrix(NA, nrow(N_ij), ncol(N_ij))
-    numerator_lambda_j = rep(NA, nrow(N_ij))
+    expectation_lambda_j = var_lambda_j = matrix(NA, nrow(N_ij), ncol(N_ij))
+    numerator_lambda_j = numerator_lambda_j_var = rep(NA, nrow(N_ij))
 
     for (j in 1 : ncol(N_ij)){
 
@@ -119,9 +233,14 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
       }
       expectation_lambda_j[, j] = exp(numerator_lambda_j - denominator_lambda_j)
 
+      denominator_lambda_j_var = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+      for (i in 1 : nrow(N_ij)){
+        numerator_lambda_j_var[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j] + (all_combinations$a_j + N_ij[i, j])^2)/(all_combinations$b_j + E_ij[i, j])^2) + log(pi_klh_all_combinations$prod))
+      }
+      var_lambda_j[, j] = exp(numerator_lambda_j_var - denominator_lambda_j_var) - (expectation_lambda_j[, j])^2
     }
 
-    result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j, "posterior_lambda_ij" = expectation_lambda_j)
+    result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j, "posterior_lambda_ij_expectation" = expectation_lambda_j, "posterior_lambda_ij_variance" = var_lambda_j)
 
 
     }else{
@@ -183,8 +302,8 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
     expectation_a_j = rep(NA, ncol(N_ij))
     expectation_b_j = rep(NA, ncol(N_ij))
 
-    expectation_lambda_j = matrix(NA, nrow(N_ij), ncol(N_ij))
-    numerator_lambda_j = rep(NA, nrow(N_ij))
+    expectation_lambda_j = var_lambda_j = matrix(NA, nrow(N_ij), ncol(N_ij))
+    numerator_lambda_j = numerator_lambda_j_var = rep(NA, nrow(N_ij))
 
     for (j in 1 : ncol(N_ij)){
 
@@ -204,9 +323,14 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
       }
       expectation_lambda_j[, j] = exp(numerator_lambda_j - denominator_lambda_j)
 
+      denominator_lambda_j_var = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
+      for (i in 1 : nrow(N_ij)){
+        numerator_lambda_j_var[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j] + (all_combinations$a_j + N_ij[i, j])^2)/(all_combinations$b_j + E_ij[i, j])) + log(pi_klh_all_combinations$prod))
+      }
+      var_lambda_j[, j] = exp(numerator_lambda_j_var - denominator_lambda_j_var) - (expectation_lambda_j[, j])^2
     }
 
-    result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_lambda_ij" = expectation_lambda_j)
+    result = list("posterior_a1_j" = expectation_a1_j, "posterior_b1_j" = expectation_b1_j, "posterior_a2_j" = expectation_a2_j, "posterior_b2_j" = expectation_b2_j, "posterior_pi_j" = expectation_pi_j, "posterior_lambda_ij_expectation" = expectation_lambda_j, "posterior_lambda_ij_variance" = var_lambda_j)
 
   }
   return(result)
@@ -215,7 +339,24 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
 
 
 
+#' @rdname posterior
+#' @aliases Posteror_ZINB_two_gamma
+#' @return a list of estimated probability of each alpha, beta, omega combination and their corresponding loglikelihood (optional)
+#' @export
+Posteror_ZINB_two_gamma = function(alpha1, beta1, alpha2, beta2, pi, omega, N, E){
+  # calculate Qx: the posterior probability that lambda came fromt he first component of the mixtrue, given N = x.
+  Qx_1 = pi*emdbook::dzinbinom(N, mu = (E/beta1)*alpha1, size = alpha1, zprob = omega)
+  Qx_2 = (1 - pi)*emdbook::dzinbinom(N, mu = (E/beta2)*alpha2, size = alpha2, zprob = omega)
+  Qx = Qx_1/(Qx_1 + Qx_2)
 
+  # calculate posterior expectation of lambda|N:
+  post_mean_lambda = Qx*(alpha1 + N)/(beta1 + E) + (1 - Qx)*(alpha2 + N)/(beta2 + E)
+  post_var_lambda = Qx*(1 - Qx)*((alpha1 + N)/(beta1 + E) - (alpha2 + N)/(beta2 + E))^2 + Qx*(alpha1 + N)/(beta1 + E)^2 + (1 - Qx)*(alpha2 + N)/(beta2 + E)^2
+
+  result = list("posterior_lambda_mean" = post_mean_lambda, "posterior_lambda_variance" = post_var_lambda)
+  return(post_mean_lambda)
+
+}
 
 
 # input, N = Nij$frequency, E = Eij$baseline
@@ -225,6 +366,8 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
 #' @export
 post_mean_lambda_ZINB = function(alpha, beta, N, E){
   post_mean_lambda = (alpha + N)/(beta + E)
+  post_lambda_var = (alpha + N)/(beta + E)^2
+  result = list("posterior_mean_lambda" = post_mean_lambda, "posterior_lambda_var" = post_lambda_var)
   return(post_mean_lambda)
 }
 
@@ -252,7 +395,9 @@ Posteror_MGPS = function(alpha1, beta1, alpha2, beta2, pi, N, E){
 
   # calculate posterior expectation of lambda|N:
   post_mean_lambda = Qx*(alpha1 + N)/(beta1 + E) + (1 - Qx)*(alpha2 + N)/(beta2 + E)
+  post_var_lambda = Qx*(1 - Qx)*((alpha1 + N)/(beta1 + E) - (alpha2 + N)/(beta2 + E))^2 + Qx*(alpha1 + N)/(beta1 + E)^2 + (1 - Qx)*(alpha2 + N)/(beta2 + E)^2
 
+  result = list("posterior_lambda_mean" = post_mean_lambda, "posterior_lambda_variance" = post_var_lambda)
   return(post_mean_lambda)
 
 }
@@ -269,7 +414,7 @@ Posteror_MGPS_log = function(alpha1, beta1, alpha2, beta2, pi, N, E){
   Qx = Qx_1/(Qx_1 + Qx_2)
 
   # calculate posterior expectation of lambda|N:
-  post_mean_lambda = Qx*((digamma(alpha1 + N) - log(beta1) + E)) + (1 - Qx)*((digamma(alpha2 + N) - log(beta2) + E))
+  post_mean_lambda = (Qx*(digamma(alpha1 + N) - log(beta1 + E)) + (1 - Qx)*(digamma(alpha2 + N) - log(beta2 + E)))/log(2)
 
   return(post_mean_lambda)
 

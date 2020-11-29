@@ -157,7 +157,14 @@ rawProcessing = function(rawdata, stratify = FALSE, frequency_threshold, data.sq
 
   if (data.squashing == FALSE){
 
-    NnE <- list("N_ij" = N_ij, "Nij" = Nij, "E_ij" = E_ij, "Eij" = Eij, "processedData" = small_tidy, "drugList" = drug_keep, "AEList" = AE_keep)
+    N_E_list = list()
+    for (j in (1:ncol(N_ij))){
+      jj = as.data.frame(cbind(N_ij[, j], E_ij[, j], rep(1, nrow(N_ij))))
+      colnames(jj) = c("N", "E", "weight")
+      N_E_list[[j]] = jj
+    }
+
+    NnE <- list("N_ij" = N_ij, "Nij" = Nij, "E_ij" = E_ij, "Eij" = Eij, "processedData" = small_tidy, "drugList" = drug_keep, "AEList" = AE_keep, "N_E_list" = N_E_list)
 
   } else if (data.squashing == TRUE) {
 
