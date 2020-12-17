@@ -130,7 +130,7 @@ posterior_abol_two_gamma = function(grid_a1, grid_b1, grid_a2, grid_b2, grid_pi,
 
   }
 
-  result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j, "posterior_lambda_ij_expectation" = expectation_lambda_j, "posterior_lambda_ij_variance" = var_lambda_j)
+  result = list("posterior_a1_j" = expectation_a1_j, "posterior_b1_j" = expectation_b1_j, "posterior_a2_j" = expectation_a2_j, "posterior_b2_j" = expectation_b2_j, "posterior_pi_j" = expectation_pi_j, "posterior_lambda_ij_expectation" = expectation_lambda_j, "posterior_lambda_ij_variance" = var_lambda_j)
   return(result)
 
 }
@@ -330,7 +330,7 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
       var_lambda_j[, j] = exp(numerator_lambda_j_var - denominator_lambda_j_var) - (expectation_lambda_j[, j])^2
     }
 
-    result = list("posterior_a1_j" = expectation_a1_j, "posterior_b1_j" = expectation_b1_j, "posterior_a2_j" = expectation_a2_j, "posterior_b2_j" = expectation_b2_j, "posterior_pi_j" = expectation_pi_j, "posterior_lambda_ij_expectation" = expectation_lambda_j, "posterior_lambda_ij_variance" = var_lambda_j)
+    result = list("posterior_a_j" = expectation_a_j, "posterior_b_j" = expectation_b_j, "posterior_omega_j" = expectation_omega_j, "posterior_lambda_ij_expectation" = expectation_lambda_j, "posterior_lambda_ij_variance" = var_lambda_j)
 
   }
   return(result)
@@ -398,7 +398,7 @@ Posteror_MGPS = function(alpha1, beta1, alpha2, beta2, pi, N, E){
   post_var_lambda = Qx*(1 - Qx)*((alpha1 + N)/(beta1 + E) - (alpha2 + N)/(beta2 + E))^2 + Qx*(alpha1 + N)/(beta1 + E)^2 + (1 - Qx)*(alpha2 + N)/(beta2 + E)^2
 
   result = list("posterior_lambda_mean" = post_mean_lambda, "posterior_lambda_variance" = post_var_lambda)
-  return(post_mean_lambda)
+  return(result)
 
 }
 
