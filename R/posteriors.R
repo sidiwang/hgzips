@@ -231,12 +231,14 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
       for (i in 1 : nrow(N_ij)){
         numerator_lambda_j[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j])/(all_combinations$b_j + E_ij[i, j])) + log(pi_klh_all_combinations$prod))
       }
+      #expectation_lambda_j[, j] = exp(numerator_lambda_j)
       expectation_lambda_j[, j] = exp(numerator_lambda_j - denominator_lambda_j)
 
       denominator_lambda_j_var = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
       for (i in 1 : nrow(N_ij)){
         numerator_lambda_j_var[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j] + (all_combinations$a_j + N_ij[i, j])^2)/(all_combinations$b_j + E_ij[i, j])^2) + log(pi_klh_all_combinations$prod))
       }
+      #var_lambda_j[, j] = exp(numerator_lambda_j_varbda_j_var) - (expectation_lambda_j[, j])^2
       var_lambda_j[, j] = exp(numerator_lambda_j_var - denominator_lambda_j_var) - (expectation_lambda_j[, j])^2
     }
 
@@ -321,12 +323,14 @@ posterior_abol = function(grid_a, grid_b, grid_omega = NULL, pi_klh_final_a_j, p
       for (i in 1 : nrow(N_ij)){
         numerator_lambda_j[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j])/(all_combinations$b_j + E_ij[i, j])) + log(pi_klh_all_combinations$prod))
       }
+      #expectation_lambda_j[, j] = exp(numerator_lambda_j)
       expectation_lambda_j[, j] = exp(numerator_lambda_j - denominator_lambda_j)
 
       denominator_lambda_j_var = LSE_R(joint_probs[, j] + log(pi_klh_all_combinations$prod))
       for (i in 1 : nrow(N_ij)){
-        numerator_lambda_j_var[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j] + (all_combinations$a_j + N_ij[i, j])^2)/(all_combinations$b_j + E_ij[i, j])) + log(pi_klh_all_combinations$prod))
+        numerator_lambda_j_var[i] = LSE_R(joint_probs[, j] + log((all_combinations$a_j + N_ij[i, j] + (all_combinations$a_j + N_ij[i, j])^2)/(all_combinations$b_j + E_ij[i, j])^2) + log(pi_klh_all_combinations$prod))
       }
+      #var_lambda_j[, j] = exp(numerator_lambda_j_var) - (expectation_lambda_j[, j])^2
       var_lambda_j[, j] = exp(numerator_lambda_j_var - denominator_lambda_j_var) - (expectation_lambda_j[, j])^2
     }
 

@@ -63,11 +63,20 @@ rawProcessing = function(rawdata, stratify = FALSE, frequency_threshold, data.sq
   # N_ij matrix after removing low frequency drugs and adverse events (threshold = 100)
   rows_to_drop = which(rowSums(N_ij_raw) <= frequency_threshold)
   columns_to_drop = which(colSums(N_ij_raw) <= frequency_threshold)
-  if (frequency_threshold != 0){
-    N_ij = as.data.frame.matrix(N_ij_raw[-rows_to_drop, -columns_to_drop])
-  } else {
-    N_ij = as.data.frame.matrix(N_ij_raw)
+  if (length(rows_to_drop) != 0){
+    if (length(columns_to_drop) == 0){
+      N_ij = as.data.frame.matrix(N_ij_raw[-rows_to_drop,])
+    } else {
+      N_ij = as.data.frame.matrix(N_ij_raw[-rows_to_drop, -columns_to_drop])
+    }
+  }else{
+    if (length(columns_to_drop) == 0){
+      N_ij = as.data.frame.matrix(N_ij_raw)
+    }else{
+      N_ij = as.data.frame.matrix(N_ij_raw[, -columns_to_drop])
+    }
   }
+
 
   drug_keep = colnames(N_ij)
   AE_keep = rownames(N_ij)
@@ -75,7 +84,19 @@ rawProcessing = function(rawdata, stratify = FALSE, frequency_threshold, data.sq
   if (stratify == FALSE){
 
     # another format
-    Nij = as.data.frame(N_ij_raw[-rows_to_drop, -columns_to_drop])
+    if (length(rows_to_drop) != 0){
+      if (length(columns_to_drop) == 0){
+        Nij = as.data.frame(N_ij_raw[-rows_to_drop, ])
+      }else{
+        Nij = as.data.frame(N_ij_raw[-rows_to_drop, -columns_to_drop])
+      }
+    }else{
+      if (length(columns_to_drop) == 0){
+        Nij = as.data.frame(N_ij_raw)
+      }else{
+        Nij = as.data.frame(N_ij_raw[, -columns_to_drop])
+      }
+    }
     colnames(Nij) = c("PT", "prod_ai", "frequency")
 
     # Calculate E_ij
